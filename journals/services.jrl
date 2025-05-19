@@ -2,13 +2,13 @@ p({
   "class": "foam.core.boot.CSpec",
   "name": "recipesDAO",
   "description": "",
-  "seqNo": true,
   "serve": true,
   "authenticate": true,
   "keywords": [ "" ],
   "serviceScript": """
     return new foam.dao.EasyDAO.Builder(x)
       .setPm(true)
+      .setSeqNo(true)
       .setAuthorize(false)
       .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
       .setOf(com.foamdev.cook.Recipe.getOwnClassInfo())
