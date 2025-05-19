@@ -1,6 +1,6 @@
 # Intro
 
-This tutorial will guide you through creating of a new project using FOAM. (TODO Brief explanation of what FOAM is).
+This tutorial will guide you through creating of a new project using FOAM. FOAM stands for "Feature-Oriented Active Modeller", and is a framework converting high-level software specifications, called "models", into useful executable sofware components, called "features". FOAM is cross-language and cross-platform, meaning that it can be used JS, Java and Swift, and for both client and server software.
 
 The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. 
 
@@ -58,7 +58,7 @@ The next step is to create a Project Object Model (POM) file for our project, na
 foam.POM({
   name: 'recipes',
   version: '1',
-  excludes: [ 'build', 'node_modules', 'deployment','foam3'],
+  excludes: [ 'build', 'node_modules', 'deployment', 'foam3' ],
   licenses: [
     `
     Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
@@ -71,12 +71,31 @@ foam.POM({
     u3: true
   },
   files: [
+  ],
+  javaFiles: [
   ]
 });
 
 ```
 
-TODO add a short description of the content, is there a link to the full syntax docs?
+name: the name of your project. Will be used for naming certain files and directories created by the build process.
+
+version: will be attached to some built files. Should be updated when you make a new release so that old cached code isn't used.
+
+excludes: by default the FOAM build will recurse sub-directories, unless they are included in excludes:. The directories listed
+are standard directories that we want to FOAM build to ignore.
+
+licenses: is an array of license notifications. When the build creates a deployment .js file, it will include all declared licenses at the top.
+
+projects: points to pom files for other projects or sub-projects. At the very minimum, you need to include the foam3/pom to include foam. You can break your project into multiple pom files, or just have one top-level pom.
+
+setFlags: is used to enable or disable build flags. These can be used to enable or disable the compilation of flagged files. You could use this to enable or disable java, swift or testing features, for example. In this example we're enabling the UI library called 'U3'. If we hadn't included "u3: true" FOAM would have compiled the U2 GUI library instead.
+
+files: Lists model files to be included in your build. The ".js" extension is not included.
+
+javaFiles: Lists .java files to be compiled. The ".java" extension is not included.
+
+You can earn more by reading the [full FOAM POM specificiation](https://github.com/kgrgreer/foam3/blob/development/doc/guides/POM.md).
 
 The last step in this section is to assure that the needed helper directories /opt and /opt/recipe directories exist and you are set as the owner:
 
