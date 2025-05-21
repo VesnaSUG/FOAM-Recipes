@@ -251,7 +251,7 @@ The advantages of journal files are that they can be updated quickly, no old dat
 they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
 database hosting or configuration, and provide excellent performance for many use-cases.
 
-So, let's create the directory where FOAM place these files by default and add the two needed configuration files:
+So, let's create the directory where FOAM places these files by default and add the two needed configuration files:
 
 ```
 mkdir /journals
