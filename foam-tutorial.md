@@ -229,12 +229,26 @@ foam.POM({
     u3: true
   },
   files: [
-    { name: 'src/com/foamdev/cook/Recipe', flags: 'js|java' },
+    { name: 'src/com/foamdev/cook/Recipe',         flags: 'js|java' },
     { name: 'src/com/foamdev/cook/RecipeCategory', flags: 'js|java' }
   ]
 });
 ```
-Then we need to setup needed journals. TODO Kevin to add basic info on purpose of journals.
+Then we need to setup needed journals. A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
+```
+  p({json data here});
+```
+or "remove" lines:
+```
+  r({json id here});
+```
+Before each update there may be a line which declares who made change and when they made it:
+```
+  // Modified by Kevin Greer (49393173) at 2025-05-20T14:53:26.590-0400
+```
+The advantages of journal files are that they can be updated quickly, no old data is lost (and so updates or reverts can be reversed),
+they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
+database hosting or configuration, and provide excellent performance for many use-cases.
 
 ```
 mkdir /journals
@@ -262,7 +276,30 @@ p({
   "client": `{"of":"com.foamdev.cook.Recipe"}`
 })
 ```
-The above will add your recipes DAO service to FOAM. TODO Kevin to add basic info on DAO and where more info can be found.
+The above will add your recipes DAO service to FOAM.
+A DAO, or Data Access Object, is an object which provides access to a collection of data. The DAO interface is:
+
+```
+interface DAO extends Sink {
+  void   put(obj, opt_sink)
+  void   remove(obj)
+  void   removeAll()
+  void   find(query, sink)
+  Sink   select(sink)
+  void   listen(sink)
+  void   pipe(sink)
+  void   unlisten(sink)
+  DAO    where(query)
+  DAO    limit(count)
+  DAO    skip(count)
+  DAO    orderBy(...comparators)
+}
+```
+
+With a DAO you can do everything you might want to do with a collection of data. The above interface is surprisingly general and powerful, despite its relatively small size. Also note that a DAO is an interface, not a specifici implementation. There are many DAO implementations that let you
+store your data in different underlying databases or other storage mechanisms. No mater which DAO implementation you're using, they all have the same interface and your client code can work with any implementation without change. Journal files, for example, are accessed through the "JDAO" DAO implementation.
+
+Learn more about DAOs in the [Introduction to FOAM Programming](https://docs.google.com/presentation/d/1yT6Yb5aJJ3OXD3n_8GKC_vtTs_rxJpzOQRgU1Oa_1r4/edit?usp=sharing).
 
 Note that FOAM core comes with a number of out-of-the-box services, that you'll become more 
 familiar with time.
