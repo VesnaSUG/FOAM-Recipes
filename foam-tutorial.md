@@ -237,11 +237,11 @@ foam.POM({
 ```
 Then we need to setup needed journals. A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
 ```
-  p({_json-data-here_});
+  p({<json-data-here>});
 ```
 or "remove" lines:
 ```
-  r({json-id-here});
+  r({<json-id-here>});
 ```
 Before each update there may be a line which declares who made change and when they made it:
 ```
