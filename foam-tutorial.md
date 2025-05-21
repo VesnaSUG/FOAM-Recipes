@@ -1,8 +1,9 @@
 # Intro
 
-This tutorial will guide you through creating of a new project using FOAM. FOAM stands for "Feature-Oriented Active Modeller", and is a framework converting high-level software specifications, called "models", into useful executable sofware components, called "features". FOAM is cross-language and cross-platform, meaning that it can be used as JS, Java and Swift, and for both client and server software.
+This tutorial will guide you through creating of a new project using FOAM. FOAM stands for "Feature-Oriented Active Modeller", and it is a framework converting high-level software specifications, called "models", into useful executable software components, called "features". FOAM is cross-language and cross-platform, meaning that it can be used as JS, Java and Swift, and for both client and server software.
 
-The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. 
+The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. The tutorial assumes that you
+already have java, nodejs and maven installed in your environment. If you need to install these, helpful tips can be found in the [FOAM installation instructions][foam-install]. Note though that you do not need to build FOAM in isolation for the tutorial. We will do this step when we add FOAM as a git sub-module to our project.
 
 By following this tutorial you will learn to:
 1. setup your project for FOAM development
@@ -14,14 +15,14 @@ underlying architecture in more depth.
 
 # Initial Setup
 
-Since we are starting from scratch, our first step is to log into an appropriate github and create a new repository named FOAM-Recipes, then clone it in the development environment. In our case we created a public repository [FOAM-Recipes][foam-recipes] and cloned into the current directory:
+Since we are starting from scratch, our first step is to log into an appropriate github and create a new repository named FOAM-Recipes, then clone it in the development environment. In our case we created a public repository [FOAM-Recipes][foam-recipes] and cloned into the current local directory:
 
 ```
 git clone git@github.com:VesnaSUG/FOAM-Recipes.git
 ```
 
 One of the conveniences of FOAM is that there are no external dependencies. All the code is at the tip of your fingers and you can step through it
-as needed. For that reason, FOAM is included in your project as a GIT submodule. Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project:
+as needed. For that reason, FOAM is included in your project as a GIT sub-module. Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project:
 
 ```
 cd FOAM-Recipes
@@ -140,7 +141,7 @@ sudo chown -R $USER /opt/recipe
 
 # Create Recipe Model
 
-The key entity for a recipe database is Recipe, so let's start by creating a FOAM model for it. Create a file Recipe.js in src/com/foamdev/cook directory and type in the following:
+The key entity for a recipe database is Recipe, so let's start by creating a FOAM model for it. Create a file Recipe.js and place it in the src/com/foamdev/cook directory that you need to create, and then type in the following:
 
 ```
 foam.CLASS({
@@ -236,11 +237,11 @@ foam.POM({
 ```
 Then we need to setup needed journals. A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
 ```
-  p({json data here});
+  p({_json-data-here_});
 ```
 or "remove" lines:
 ```
-  r({json id here});
+  r({json-id-here});
 ```
 Before each update there may be a line which declares who made change and when they made it:
 ```
@@ -249,6 +250,8 @@ Before each update there may be a line which declares who made change and when t
 The advantages of journal files are that they can be updated quickly, no old data is lost (and so updates or reverts can be reversed),
 they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
 database hosting or configuration, and provide excellent performance for many use-cases.
+
+So, let's create the directory where FOAM place these files by default and add the two needed configuration files:
 
 ```
 mkdir /journals
@@ -296,10 +299,10 @@ interface DAO extends Sink {
 }
 ```
 
-With a DAO you can do everything you might want to do with a collection of data. The above interface is surprisingly general and powerful, despite its relatively small size. Also note that a DAO is an interface, not a specifici implementation. There are many DAO implementations that let you
+With a DAO you can do everything you might want to do with a collection of data. The above interface is surprisingly general and powerful, despite its relatively small size. Also note that a DAO is an interface, not a specific implementation. There are many DAO implementations that let you
 store your data in different underlying databases or other storage mechanisms. No mater which DAO implementation you're using, they all have the same interface and your client code can work with any implementation without change. Journal files, for example, are accessed through the "JDAO" DAO implementation.
 
-Learn more about DAOs in the [Introduction to FOAM Programming](https://docs.google.com/presentation/d/1yT6Yb5aJJ3OXD3n_8GKC_vtTs_rxJpzOQRgU1Oa_1r4/edit?usp=sharing).
+Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro].
 
 Note that FOAM core comes with a number of out-of-the-box services, that you'll become more 
 familiar with time.
@@ -335,8 +338,13 @@ user: foam-admin
 password: foam-admin
 ```
 
+// TODO Vesna to add screen shots of the directory structure and the app screen at this point
+// and continue the tutorial
+
 <!-- List all links here -->
 
 [foam-repo]: https://github.com/kgrgreer/foam3
 [foam-recipes]: https://github.com/VesnaSUG/FOAM-Recipes
 [foam-pom-spec]: https://github.com/kgrgreer/foam3/blob/development/doc/guides/POM.md
+[foam-install]: https://github.com/kgrgreer/foam3/blob/development/INSTALL.md
+[foam-intro]: https://docs.google.com/presentation/d/1yT6Yb5aJJ3OXD3n_8GKC_vtTs_rxJpzOQRgU1Oa_1r4/edit?usp=sharing
