@@ -27,12 +27,14 @@ as needed. For that reason, FOAM is included in your project as a GIT sub-module
 ```
 cd FOAM-Recipes
 git submodule add git@github.com:kgrgreer/foam3.git
+git submodule update --init --recursive --rebase --force
 ```
 
 ## Generate the demonstration application
 
 ```
-$ foam3/tools/build.js -Ttemplate/demp/Project --createProject:com.foamdev.cook.recipe
+$ node foam3/tools/build.js -Ttemplate/demp/Project --createProject --appName:Recipe --package:com.foamdev.cook.recipe
+
 ```
 
 The last step in this section is to assure that the needed helper directory /opt exist and you are set as the owner:
@@ -44,7 +46,9 @@ sudo chown -R $USER /opt
 Now we are ready to test our code. From the command line, in the FOAM-Recipes directory type:
 
 ```
-build.sh
+$ deployment/demo/run.sh 
+#or
+$ ./build.sh -Jdemo 
 ```
 
 This we trigger the build and run the server. You can open your application in the web browser at http://localhost:8080/. 
@@ -65,7 +69,7 @@ Inspect the Project Object Model (POM) file for our project, named pom.js.  The 
 
 ```
 foam.POM({
-  name: 'cook',
+  name: 'recipe',
   excludes: [ '*' ],
   projects: [
     { name: 'foam3/pom'},
@@ -77,7 +81,7 @@ foam.POM({
   `,
   envs: {
     VERSION: '1.0.0',
-    // javaMainArgs: 'spid:cook'
+    // javaMainArgs: 'spid:recipe'
   },
   tasks: [
     function javaManifest() {
@@ -85,7 +89,6 @@ foam.POM({
     }
   ]
 });
-
 
 ```
 
