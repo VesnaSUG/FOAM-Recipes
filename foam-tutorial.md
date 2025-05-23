@@ -30,10 +30,17 @@ git submodule add git@github.com:kgrgreer/foam3.git
 git submodule update --init --recursive --rebase --force
 ```
 
-## Generate the demonstration application
-
+The FOAM build depends on a few npm packages
+Install them with:
 ```
-$ node foam3/tools/build.js -Ttemplate/demp/Project --createProject --appName:Recipe --package:com.foamdev.cook.recipe
+cd foam3/
+./build.sh --install
+```
+
+## Generate the demonstration application
+From the FOAM-Recipes directory, execute the following to generate an example Recipe application.
+```
+$ node foam3/tools/build.js -Ttemplate/demo/Project --createProject --appName:Recipe --package:com.foamdev.cook.recipe
 
 ```
 
@@ -337,10 +344,21 @@ p({
 })
 ```
 
-// OTHER: 
-// deployment/test 
+# Testing
+As you develop, also consider creating tests cases to exercise your models. An example is provided in 
+src/com/foamdev/cook/recipe/test/RecipeTest.js
+The FOAM build executes tests defined journals named tests.jrl, typically co-located with the tests themselves.  In our case in the test directory mentioned above.  If additional configuration is required for a test, such as test data or special service configuration, then by convention those journals are stored in deployment/test/.  The build will automatically look for this deployment directory.  
+Test are executed with build task java-tests. 
+Examples:
 ```
+# run all test cases - includes FOAM test cases along with your application test cases.
+./build.sh --java-tests
+
+# run one test case
 ./build.sh --java-tests:RecipeTest
+
+# run a selection of test cases (comma seperated)
+./build.sh --java-tests:Test1,Test2
 ```
 
 // TODO Vesna to add screen shots of the directory structure and the app screen at this point
