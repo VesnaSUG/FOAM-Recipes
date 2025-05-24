@@ -27,56 +27,73 @@ as needed. For that reason, FOAM is included in your project as a GIT sub-module
 ```
 cd FOAM-Recipes
 git submodule add git@github.com:kgrgreer/foam3.git
+git submodule update --init --recursive --rebase --force
 ```
 
-## Create Auxiliary Files and Directories
-
-As the first step let's make sure that we are setup up to commit the code to our github repo without polluting it with byproduct files by creating a .gitignore file with the following content:
-
+The FOAM build depends on a few npm packages
+Install them with:
 ```
-*#*
-*~
-.DS_Store
-build
-node_modules
-npm-debug.log
-pom.xml
+cd foam3/
+./build.sh --install
 ```
 
-Then create a build.sh file for the build alias that will save us some typing while running FOAM builds. The file should have the following content:
+## Generate the demonstration application
+From the FOAM-Recipes directory, execute the following to generate an example Recipe application.
+```
+$ node foam3/tools/build.js -Ttemplate/demo/Project --appName:Recipe --modelName:Recipe --package:com.foamdev.cook
 
 ```
-#!/bin/bash
-node foam3/tools/build.js "$@"
-```
 
-And then adjust the file permission to make it executable:
+The last step in this section is to assure that the needed helper directory /opt exist and you are set as the owner:
 
 ```
-chmod +x build.sh
+sudo chown -R $USER /opt
 ```
 
-The next step is to create a Project Object Model (POM) file for our project, named pom.js. Note that this file is a meta project file that will be used by FOAM to generate the traditional POM.xml used by build tools. The file should have the following content:
+Now we are ready to test our code. From the command line, in the FOAM-Recipes directory type:
+
+```
+$ deployment/demo/run.sh
+#or
+$ ./build.sh -Jdemo
+```
+
+This we trigger the build and start the server. You can open your application in the web browser at http://localhost:8080/. 
+Use one of the following credentials at the logging screen:
+
+```
+# administrator - full access
+user: foam-admin
+password: foam-admin
+
+# regular non-priveledged user - can only interact with Recipes.
+user: demo
+password: demopassword
+```
+
+# Discussion of Project components
+Inspect the Project Object Model (POM) file for our project, named pom.js.  The file should have the following content:
 
 ```
 foam.POM({
-  name: 'recipes',
-  version: '1',
-  excludes: [ 'build', 'node_modules', 'deployment', 'foam3' ],
-  licenses: [
-    `
-    Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
-    `
-  ],
+  name: 'recipe',
+  excludes: [ '*' ],
   projects: [
-    { name: 'foam3/pom' }
-  ], 
-  setFlags: {
-    u3: true
-  },
-  files: [
+    { name: 'foam3/pom'},
+    { name: 'src/com/foamdev/cook/pom'},
+    { name: 'journals/pom' }
   ],
-  javaFiles: [
+  licenses: `
+    Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
+  `,
+  envs: {
+    VERSION: '1.0.0',
+    // javaMainArgs: 'spid:recipe'
+  },
+  tasks: [
+    function javaManifest() {
+      JAVA_MANIFEST_VENDOR_ID = 'com.foamdev.cook';
+    }
   ]
 });
 
@@ -97,62 +114,63 @@ Let's look briefly at each of the elements in the pom file:
 <td width=80% align="left">The name of your project. Will be used for naming certain files and directories created by the build process.</td>
 </tr>
 <tr>
-<td width=20% align="left">version</td>
-<td width=80% align="left">The version that will be attached to some built files. Should be updated when you make a new release so that old cached code isn't used.</td>
-</tr>
-<tr>
 <td width=20% align="left">excludes</td>
 <td width=80% align="left">By default the FOAM build will recurse sub-directories, unless they are included in excludes. The directories listed
 are standard directories that we want to FOAM build to ignore.</td>
-</tr>
-<tr>
-<td width=20% align="left">licenses</td>
-<td width=80% align="left">An array of license notifications. When the build creates a deployment .js file, it will include all declared licenses at the top.</td>
 </tr>
 <tr>
 <td width=20% align="left">projects</td>
 <td width=80% align="left">Points to pom files for other projects or sub-projects. At the very minimum, you need to include the foam3/pom to include foam. You can break your project into multiple pom files, or just have one top-level pom.</td>
 </tr>
 <tr>
-<td width=20% align="left">setFlags</td>
-<td width=80% align="left">Used to enable or disable build flags. These can be used to enable or disable the compilation of flagged files. You could use this to enable or disable java, swift or testing features, for example. In this example we're enabling the UI library called 'U3'. If we hadn't included "u3: true" FOAM would have compiled the U2 GUI library instead.</td>
+<td width=20% align="left">licenses</td>
+<td width=80% align="left">An array of license notifications. When the build creates a deployment .js file, it will include all declared licenses at the top.</td>
 </tr>
 <tr>
-<td width=20% align="left">files</td>
-<td width=80% align="left">Lists model files to be included in your build. The ".js" extension is not included.</td>
+<td width=20% align="left">VERSION</td>
+<td width=80% align="left">The version that will be attached to some built files. Should be updated when you make a new release so that old cached code isn't used.</td>
 </tr>
 <tr>
-<td width=20% align="left">javaFiles</td>
-<td width=80% align="left">Lists .java files to be compiled. The ".java" extension is not included.</td>
+<td width=20% align="left">tasks</td>
+<td width=80% align="left">Tasks are build hooks that allow the pom to modify build properties.  In this case when the build is creating the Java JAR Manifest file, this pom sets the vendor id property.</td>
 </tr>
 </tbody>
 </table>
 
-
-
 You can learn more on the pom file and possible customization options by reading the full [FOAM POM specification][foam-pom-spec].
 
-The last step in this section is to assure that the needed helper directories /opt and /opt/recipe directories exist and you are set as the owner:
 
-```
-sudo chown -R $USER /opt
-sudo chown -R $USER /opt/recipe
-```
+# The Recipe Model
 
-# Create Recipe Model
-
-The key entity for a recipe database is Recipe, so let's start by creating a FOAM model for it. Create a file Recipe.js and place it in the src/com/foamdev/cook directory that you need to create, and then type in the following:
+The key entity for a recipe database is Recipe.  Open file src/foam/foamdev/cook/Recipe.js:
 
 ```
 foam.CLASS({
   package: 'com.foamdev.cook',
   name: 'Recipe',
+
+  implements: [
+    'foam.core.auth.CreatedAware',
+    'foam.core.auth.LastModifiedAware'
+  ],
+
+  tableColumns: [
+    'name',
+    'description',
+    'category'
+  ],
+
+  searchColumns: [
+    'name',
+    'category'
+  ],
+
   properties: [
     {
-      class: 'Long',
+      class: 'String',
       name: 'id',
       createVisibility: 'HIDDEN',
-      updateVisibility: 'RO',
+      updateVisibility: 'RO'
     },
     {
       class: 'String',
@@ -165,8 +183,8 @@ foam.CLASS({
     },
     {
       class: 'Enum',
-      name: 'category',
       of: 'com.foamdev.cook.RecipeCategory',
+      name: 'category',
       value: 'OTHER'
     },
     {
@@ -174,24 +192,24 @@ foam.CLASS({
       name: 'source'
     }
   ],
+
   methods: [
-    function toString() {
+    function toSummary() {
       return this.name;
     },
-    function getTotalTime() {
-      return this.prepTime + this.cookTime;
+    function toString() {
+      return this.toSummary();
     }
   ]
 });
+
 ```
 Here we defined a model for class <code>Recipe</code> that will be in the <code>com.foamdev.cook</code> package with several properties and a few sample methods.
-Most of the properties are simple to decipher, except <code>id</code> and <code>category</code>, so let's double click in those two.
+Most of the properties are simple to decipher, except <code>id</code> and <code>category</code>, so let's navigate into those two.
 
-The values for the <code>id</code> are autogenerated, unique ids for each instance of this class, therefore we are giving FOAM the instruction
-to omit it from the create screen for this class by setting <code>createVisibility</code> to <code>HIDDEN</code>. Since the property is not editable, 
-we also adjusted <code>updateVisibility</code> to read-only.
+The values for the <code>id</code> are autogenerated, unique ids for each instance of this class, therefore we are giving FOAM the instruction to omit it from the create screen for this class by setting <code>createVisibility</code> to <code>HIDDEN</code>. Since the property is not editable, we also adjusted <code>updateVisibility</code> to read-only.
 
-The other property that needs some context is <code>category</code>. The possible values for this property are the values enumerated in <code>RecipeCategory</code> ENUM. To define them, we need to create a new file named RecipeCategory.js and place the type in the following:
+The other property that needs some context is <code>category</code>. The possible values for this property are the values enumerated in <code>RecipeCategory</code> ENUM. See file named RecipeCategory.js:
 
 ```
 foam.ENUM({
@@ -209,33 +227,26 @@ foam.ENUM({
 });
 ```
 
-# Build the Service
+# Inspecting the Project Components
 
-Before we can test our code we need to do a few more things. First we need to update the pom.js file to include the two .js file we created:
+VESNA: this files of the original pom are now in src/com/foamdev/cook/pom.js
+
+Poms are hierarchical and there is another pom which manages the model files themselves. See src/com/foamdev/cook/pom.js
 
 ```
 foam.POM({
-  name: 'recipes',
-  version: '1',
-  excludes: [ 'build', 'node_modules', 'deployment','foam3'],
-  licenses: [
-    `
-    Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
-    `
-  ],
+  name: 'recipe',
   projects: [
-    { name: 'foam3/pom' }
-  ], 
-  setFlags: {
-    u3: true
-  },
+    { name: 'test/pom',                 flags: 'test' }
+  ],
   files: [
-    { name: 'src/com/foamdev/cook/Recipe',         flags: 'js|java' },
-    { name: 'src/com/foamdev/cook/RecipeCategory', flags: 'js|java' }
+    { name: 'Recipe',                   flags: 'js|java' },
+    { name: 'RecipeCategory',           flags: 'js|java' }
   ]
 });
+
 ```
-Then we need to setup needed journals. A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
+Next we can inspect journals.  A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
 ```
   p({<json-data-here>});
 ```
@@ -244,6 +255,7 @@ or "remove" lines:
   r({<json-id-here>});
 ```
 Before each update there may be a line which declares who made change and when they made it:
+VESNA - this only occurs in run-time journals. This would never be the case for journals stored in a repo. 
 ```
   // Modified by Kevin Greer (49393173) at 2025-05-20T14:53:26.590-0400
 ```
@@ -251,35 +263,39 @@ The advantages of journal files are that they can be updated quickly, no old dat
 they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
 database hosting or configuration, and provide excellent performance for many use-cases.
 
-So, let's create the directory where FOAM places these files by default and add the two needed configuration files:
+Journal files which provide default application configuration are located in one of three places in the repository: 
+_Incomplete_
+* journals/ - system wide configuration, concerning multiple models
+* src/... - required configuration for a particular model, co-located with the model.
+* deployment/ - configuration specific to particular deployment (customer)
 
-```
-mkdir /journals
-touch /journals/services.jrl
-touch /journals/menus.jrl
-```
-The services.jrl file should have the following content:
+For our example, groups, menus, permissions, and services journals are under <code>journals/</code>
+And a demo user journal is under <code>deployment/demo</code>
+
+So, let's inspect these files
+
+The journals/services.jrl file should have the following content:
 ```
 p({
   "class": "foam.core.boot.CSpec",
-  "name": "recipesDAO",
+  "name": "recipeDAO",
   "description": "",
   "serve": true,
   "authenticate": true,
-  "keywords": [ "" ],
+  "keywords": [ "recipe" ],
   "serviceScript": """
     return new foam.dao.EasyDAO.Builder(x)
+      .setOf(com.foamdev.cook.Recipe.getOwnClassInfo())
       .setPm(true)
-      .setSeqNo(true)
+      .setFuid(true)
       .setAuthorize(false)
       .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
-      .setOf(com.foamdev.cook.Recipe.getOwnClassInfo())
       .build();
   """,
   "client": `{"of":"com.foamdev.cook.Recipe"}`
 })
 ```
-The above will add your recipes DAO service to FOAM.
+The above will add your recipe DAO service to FOAM.
 A DAO, or Data Access Object, is an object which provides access to a collection of data. The DAO interface is:
 
 ```
@@ -307,12 +323,12 @@ Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro].
 Note that FOAM core comes with a number of out-of-the-box services, that you'll become more 
 familiar with time.
 
-To include our entity in the FOAM we need to add this to the menus.jrl file created above:
+A **menu** is used to make our entity visible in FOAM.  See journals/menus.jrl file.
 
 ```
 p({
   "class":"foam.core.menu.Menu",
-  "id":"recipes",
+  "id":"cook.recipe",
   "label":"Recipes",
   "authenticate":true,
   "keywords":[""],
@@ -320,22 +336,26 @@ p({
     "class":"foam.core.menu.DAOMenu2",
     "config":{
       "class":"foam.comics.v2.DAOControllerConfig",
-      "daoKey":"recipesDAO"
+      "daoKey":"recipeDAO"
     }
   }
 })
 ```
-Now we are ready to test our code. From the command line, in the root directory type:
 
+# Testing
+As you develop, also consider creating tests cases to exercise your models and application. An example is provided in <code>src/com/foamdev/cook/test/RecipeTest.js</code>, with configuration to run it in <code>development/test/test.sh</code>.
+The FOAM build executes tests defined journals named tests.jrl, typically co-located with the tests themselves.  In our case in the test directory mentioned above.  If additional configuration is required for a test, such as test data or special service configuration, then by convention those journals are stored in <code>deployment/test/</code>.  The build will automatically look for this deployment directory.
+Test are executed with build task **--java-tests**. 
+Examples:
 ```
-build.sh -j
-```
+# run all test cases - includes FOAM test cases along with your application test cases.
+./build.sh --java-tests
 
-This we trigger the build and run the server. You can open your application in the web browser at http://localhost:8080/. Use the following credentials at the logging screen:
+# run one test case
+./build.sh --java-tests:RecipeTest
 
-```
-user: foam-admin
-password: foam-admin
+# run a selection of test cases (comma seperated)
+./build.sh --java-tests:Test1,Test2
 ```
 
 // TODO Vesna to add screen shots of the directory structure and the app screen at this point
