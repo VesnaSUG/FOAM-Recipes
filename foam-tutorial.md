@@ -80,7 +80,7 @@ foam.POM({
   excludes: [ '*' ],
   projects: [
     { name: 'foam3/pom'},
-    { name: 'src/com/foamdev/cook/pom'},
+    { name: 'src/com/foamdev/cook/recipe/pom'},
     { name: 'journals/pom' }
   ],
   licenses: `
@@ -92,7 +92,7 @@ foam.POM({
   },
   tasks: [
     function javaManifest() {
-      JAVA_MANIFEST_VENDOR_ID = 'com.foamdev.cook';
+      JAVA_MANIFEST_VENDOR_ID = 'com.foamdev.cook.recipe';
     }
   ]
 });
