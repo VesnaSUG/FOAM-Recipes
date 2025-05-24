@@ -183,7 +183,7 @@ foam.CLASS({
     },
     {
       class: 'Enum',
-      of: 'com.foamdev.cood.RecipeCategory',
+      of: 'com.foamdev.cook.RecipeCategory',
       name: 'category',
       value: 'OTHER'
     },
@@ -231,7 +231,7 @@ foam.ENUM({
 
 VESNA: this files of the original pom are now in src/com/foamdev/cook/pom.js
 
-Poms are hierachal and there is another pom which manages the model files themselves. See src/com/foamdev/cook/pom.js
+Poms are hierarchical and there is another pom which manages the model files themselves. See src/com/foamdev/cook/pom.js
 
 ```
 foam.POM({
