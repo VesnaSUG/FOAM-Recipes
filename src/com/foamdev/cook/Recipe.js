@@ -1,12 +1,29 @@
 foam.CLASS({
   package: 'com.foamdev.cook',
   name: 'Recipe',
+
+  implements: [
+    'foam.core.auth.CreatedAware',
+    'foam.core.auth.LastModifiedAware'
+  ],
+
+  tableColumns: [
+    'name',
+    'description',
+    'category'
+  ],
+
+  searchColumns: [
+    'name',
+    'category'
+  ],
+
   properties: [
     {
-      class: 'Long',
+      class: 'String',
       name: 'id',
       createVisibility: 'HIDDEN',
-      updateVisibility: 'RO',
+      updateVisibility: 'RO'
     },
     {
       class: 'String',
@@ -19,8 +36,8 @@ foam.CLASS({
     },
     {
       class: 'Enum',
-      name: 'category',
       of: 'com.foamdev.cook.RecipeCategory',
+      name: 'category',
       value: 'OTHER'
     },
     {
@@ -28,13 +45,16 @@ foam.CLASS({
       name: 'source'
     }
   ],
+
   methods: [
-    function toString() {
+    function sampleMethod() {
+      return 'Hello From Recipe World!';
+    },
+    function toSummary() {
       return this.name;
     },
-    function getTotalTime() {
-      return this.prepTime + this.cookTime;
+    function toString() {
+      return this.toSummary();
     }
   ]
 });
-

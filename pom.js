@@ -1,20 +1,21 @@
 foam.POM({
-  name: 'recipes',
-  version: '1',
-  excludes: [ 'build', 'node_modules', 'deployment','foam3'],
-  licenses: [
-    `
-    Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
-    `
-  ],
+  name: 'recipe',
+  excludes: [ '*' ],
   projects: [
-    { name: 'foam3/pom' }
-  ], 
-  setFlags: {
-    u3: true
+    { name: 'foam3/pom'},
+    { name: 'src/com/foamdev/cook/pom'},
+    { name: 'journals/pom' }
+  ],
+  licenses: `
+    // Add your license header here
+  `,
+  envs: {
+    VERSION: '1.0.0',
+    // javaMainArgs: 'spid:recipe'
   },
-  files: [
-    { name: 'src/com/foamdev/cook/Recipe', flags: 'js|java' },
-    { name: 'src/com/foamdev/cook/RecipeCategory', flags: 'js|java' }
+  tasks: [
+    function javaManifest() {
+      JAVA_MANIFEST_VENDOR_ID = 'com.foamdev.cook';
+    }
   ]
 });

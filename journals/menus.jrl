@@ -1,14 +1,14 @@
 p({
   "class":"foam.core.menu.Menu",
-  "id":"recipes",
-  "label":"Recipes",
+  "id":"recipe.recipe",
+  "label":"Recipe",
   "authenticate":true,
   "keywords":[""],
   "handler":{
     "class":"foam.core.menu.DAOMenu2",
     "config":{
       "class":"foam.comics.v2.DAOControllerConfig",
-      "daoKey":"recipesDAO"
+      "daoKey":"recipeDAO"
     }
   }
 })
