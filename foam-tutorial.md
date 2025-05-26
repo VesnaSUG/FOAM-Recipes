@@ -16,7 +16,7 @@ underlying architecture in more depth.
 > [!IMPORTANT]
 > The tutorial has instructions to build the application from *scratch* and if you wish to follow along you need to start with an *EMPTY* repository.
 
-However, if you wish to just read along and have a running application you can clone the tutorial repository instead:
+However, if you wish to just read along and have a running application you can clone the tutorial repository instead. Here is an example of cloning it using [SSH][github-ssh]:
 
 ```
 git clone git@github.com:VesnaSUG/FOAM-Recipes.git
@@ -501,3 +501,4 @@ foam.POM({
 [github-docs-repo]: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository
 [app-screen-1]: images/screen1.png
 [recipe-schema]: images/RecipeDBSchema.png
+[github-ssh]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account
