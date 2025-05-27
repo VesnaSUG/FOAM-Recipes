@@ -54,7 +54,8 @@ cd ..
 The easiest way to create a FOAM application is to use the foam build script <code>foam3/tools/build.js</code> and generate the application structure and the main application model. To create your application this way from the root directory execute the following:
 
 ```
-node foam3/tools/build.js -Tsetup/Project --appName:Recipe --package:com.foamdev.cook
+cd foam3
+node tools/build.js -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:badpassword
 ```
 
 In this case, we named the application and the top model _Recipe_ and placed it in the _com.foamdev.cook_ package.
