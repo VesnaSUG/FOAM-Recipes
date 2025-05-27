@@ -102,7 +102,7 @@ foam.POM({
   projects: [
     { name: 'foam3/pom'},
     { name: 'src/com/foamdev/cook/pom'},
-    { name: 'journals/pom' }
+    { name: 'deployment/recipe/pom' }
   ],
   licenses: `
     Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
