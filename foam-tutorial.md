@@ -54,7 +54,9 @@ cd ..
 The easiest way to create a FOAM application is to use the foam build script <code>foam3/tools/build.js</code> and generate the application structure and the main application model. To create your application this way from the root directory execute the following:
 
 ```
-node foam3/tools/build.js -Tsetup/Project --appName:Recipe --package:com.foamdev.cook
+cd foam3
+node tools/build.js -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+cd ..
 ```
 
 In this case, we named the application and the top model _Recipe_ and placed it in the _com.foamdev.cook_ package.
@@ -85,7 +87,7 @@ One of the generated files is build.sh with the following content:
 node foam3/tools/build.js "$@"
 ```
 
-This is a convenience script to make the application builds easier. Before you use it, make sure that the script has executable privileges (if generated, it will already have the correct mode):
+This is a convenience script to make the application builds easier. Before you use it, make sure that the script has executable privileges:
 
 ```
 chmod +x build.sh
@@ -100,7 +102,7 @@ foam.POM({
   projects: [
     { name: 'foam3/pom'},
     { name: 'src/com/foamdev/cook/pom'},
-    { name: 'journals/pom' }
+    { name: 'deployment/recipe/pom' }
   ],
   licenses: `
     Copyright 2025 FOAM Recipes Authors. All Rights Reserved.
@@ -343,7 +345,7 @@ Use one of the following credentials at the logging screen:
 ```
 # administrator - full access
 user: admin
-password: foam-admin
+password: demopassword
 
 # regular non-priveledged user - can only interact with Recipes.
 user: demo
