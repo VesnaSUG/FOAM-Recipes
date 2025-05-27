@@ -56,6 +56,7 @@ The easiest way to create a FOAM application is to use the foam build script <co
 ```
 cd foam3
 node tools/build.js -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+cd ..
 ```
 
 In this case, we named the application and the top model _Recipe_ and placed it in the _com.foamdev.cook_ package.
@@ -86,7 +87,7 @@ One of the generated files is build.sh with the following content:
 node foam3/tools/build.js "$@"
 ```
 
-This is a convenience script to make the application builds easier. Before you use it, make sure that the script has executable privileges (if generated, it will already have the correct mode):
+This is a convenience script to make the application builds easier. Before you use it, make sure that the script has executable privileges:
 
 ```
 chmod +x build.sh
