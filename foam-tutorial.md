@@ -362,8 +362,8 @@ Use one of the following credentials at the logging screen:
 
 ```
 # administrator - full access
-user: foam-admin
-password: foam-admin
+user: admin
+password: demopassword
 
 # regular non-priveledged user - can only interact with Recipes.
 user: demo
