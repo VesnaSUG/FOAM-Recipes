@@ -73,7 +73,7 @@ The easiest way to create a FOAM application is to use the foam build script <co
 
 ```
 cd foam3
-node tools/build.js -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+./build.sh -Tsetup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
 cd ..
 ```
 
