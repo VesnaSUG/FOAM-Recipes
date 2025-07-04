@@ -48,8 +48,8 @@ Since we are starting from scratch, our first step is to log into an appropriate
 git clone <git URL for your repository>
 ```
 
-One of the conveniences of FOAM is that there are no external dependencies. All the code is at the tip of your fingers and you can step through it
-as needed. For that reason, FOAM is included in your project as a GIT sub-module. Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project. Here is an example how to do it using the ssh github link:
+One of the conveniences of FOAM is that there are virtually no external dependencies. All the code is at the tip of your fingers and you can step through it as needed. 
+For that reason, FOAM is included in your project as a GIT sub-module. Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project. Here is an example how to do it using the ssh github link:
 
 ```
 cd FOAM-Recipes
@@ -57,7 +57,7 @@ git submodule add git@github.com:kgrgreer/foam3.git
 git submodule update --init --recursive --rebase --force
 ```
 
-The FOAM build depends on a few npm packages. Install them with:
+The FOAM build depends on a few generic npm packages. Install them with:
 
 ```
 #cd into the foam3 sub-module directory
@@ -155,7 +155,8 @@ Let's look briefly at the purpure of each of the elements in this file:
 <tr>
 <td width=20% align="left">excludes</td>
 <td width=80% align="left">By default the FOAM build will recurse sub-directories, unless they are included in excludes. The directories listed
-are standard directories that we want to FOAM build to ignore.</td>
+are standard directories that we want to FOAM build to ignore. The <b>*</b> turns off all defaults. The build will only include projects listed
+in the projects below.</td>
 </tr>
 <tr>
 <td width=20% align="left">projects</td>
@@ -262,7 +263,7 @@ Journal files which provide default application configuration are located in one
 * deployment/ - configuration specific to particular deployment (customer)
 
 For our example, groups, menus, permissions, and services journals are under <code>journals/</code>
-And a demo user journal is under <code>deployment/demo</code>.
+and a demo user journal is under <code>deployment/demo</code>.
 
 ### FOAM DAO Service
 
@@ -291,7 +292,7 @@ p({
 The FOAM core comes with a number of out-of-the-box services, with DAO service being one of them, that you'll become more 
 familiar with time. With the journal above, we add the recipes DAO service to FOAM.
 
-A DAO, or Data Access Object, is an object which provides access to a collection of data. The DAO interface is:
+A DAO, or Data Access Object, is an object which provides access to a collection of data. Here is a simplified pseudo code for the DAO interface:
 
 ```
 interface DAO extends Sink {
@@ -313,7 +314,7 @@ interface DAO extends Sink {
 With a DAO you can do everything you might want to do with a collection of data. The above interface is surprisingly general and powerful, despite its relatively small size. Also note that a DAO is an interface, not a specific implementation. There are many DAO implementations that let you
 store your data in different underlying databases or other storage mechanisms. No mater which DAO implementation you're using, they all have the same interface and your client code can work with any implementation without change. Journal files, for example, are accessed through the "JDAO" DAO implementation.
 
-Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro].
+Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro] and by inspecting the [model][foam-dao] for the DAO interface.
 
 Note that FOAM core comes with a number of out-of-the-box services, that you'll become more 
 familiar with time.
@@ -529,3 +530,4 @@ foam.POM({
 [app-screen-1]: images/screen1.png
 [recipe-schema]: images/RecipeDBSchema.png
 [github-ssh]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
+[foam-dao]: https://github.com/kgrgreer/foam3/blob/development/src/foam/dao/DAO.js
