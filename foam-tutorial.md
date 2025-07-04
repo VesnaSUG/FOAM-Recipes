@@ -20,39 +20,44 @@
 
 This tutorial will guide you through creating of a new project using FOAM. FOAM stands for "Feature-Oriented Active Modeller", and it is a framework converting high-level software specifications, called "models", into useful executable software components, called "features". FOAM is cross-language and cross-platform, meaning that it can be used as JS, Java and Swift, and for both client and server software.
 
-The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. The tutorial assumes that you
-already have java, nodejs and maven installed in your environment. If you need to install these, helpful tips can be found in the [FOAM installation instructions][foam-install]. Note that you do not need to build FOAM in isolation for the tutorial. We will do this step when we add FOAM as a git sub-module to our project.
+The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. The tutorial assumes that you 
+already have <code>Java</code>, <code>Node.js</code> and <code>Maven</code> installed in your environment. If you need to install these, helpful tips can be found in the [FOAM installation instructions][foam-install]. 
+
+> [!IMPORTANT]
+> Note that you do not need to build FOAM in isolation for the tutorial. We will do this step when we add FOAM as a git sub-module to our project.
 
 By following this tutorial you will learn to:
 1. Initialize a new FOAM application 
 1. Define FOAM models
-1. TODO ...
+1. Familiarize with DAOs
+1. Understand journals
+1. ...
 
-This tutorial is best suited for FOAM beginners as well as experienced FOAM developers who wish to understand the 
-underlying architecture in more depth.
+This tutorial is best suited for FOAM beginners as well as experienced FOAM developers who wish to understand the underlying architecture in more depth.
 
-> [!IMPORTANT]
-> The tutorial has instructions to build the application from *scratch* and if you wish to follow along you need to start with an *EMPTY* repository.
-
-However, if you wish to just read along and have a running application you can clone the tutorial repository instead. Here is an example of cloning it using [SSH][github-ssh]:
-
-```
-git clone git@github.com:VesnaSUG/FOAM-Recipes.git
-```
 
 # Initial Setup
 
-Since we are starting from scratch, our first step is to log into an appropriate github and create a NEW repository. You can name your repository any way you like (ours is named FOAM-Recipes). You can find more information on how to create a new github repository [here][github-docs-repo]. Once you created an EMPTY repository clone it in your local development environment:
+If you are starting from scratch the best way to start is with an empty github repository you own. You can find more information on how to create a new github repository [here][github-docs-repo]. 
+After you created a github repo for your project, the first step is to clone it into your development environment:
 
 ```
 git clone <git URL for your repository>
+cd <repository folder>
 ```
 
-One of the conveniences of FOAM is that there are virtually no external dependencies. All the code is at the tip of your fingers and you can step through it as needed. 
-For that reason, FOAM is included in your project as a GIT sub-module. Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project. Here is an example how to do it using the ssh github link:
+Alternatively you can work with a local project that you can add remote tracking to at later time. 
 
 ```
-cd FOAM-Recipes
+mkdir <your folder>
+cd <your folder>
+git init
+```
+
+One of the conveniences of FOAM is that allows customizations to the predefined models. For that reason, FOAM is included in your project as a GIT sub-module, instead of a package.
+Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project. Here is an example how to do it using the ssh github link:
+
+```
 git submodule add git@github.com:kgrgreer/foam3.git
 git submodule update --init --recursive --rebase --force
 ```
@@ -63,23 +68,21 @@ The FOAM build depends on a few generic npm packages. Install them with:
 #cd into the foam3 sub-module directory
 cd foam3/
 ./build.sh --install
-# cd back to your root directory
-cd ..
 ```
 
 # Generate Application
 
-The easiest way to create a FOAM application is to use the foam build script <code>foam3/tools/build.js</code> and generate the application structure and the main application model. To create your application this way from the root directory execute the following:
+The easiest way to create a FOAM application is to use the foam build script <code>foam3/tools/build.js</code> and generate the application structure and the main application model. To create your application this way,
+while still in the *foam3* directory, execute the following:
 
 ```
-cd foam3
-./build.sh -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+# from foam3 directory
+./build.sh -T+setup/Project --type:simple --appName:Recipes --modelName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+# cd back to your root directory
 cd ..
 ```
 
 In this case, we named the application and the top model _Recipe_ and placed it in the _com.foamdev.cook_ package.
-
-
 
 ## Application Structure
 
@@ -87,8 +90,10 @@ Your application directory should now look similar to this:
 
 ```
 /deployment
+  /demo
+  /recipes
+  /test
 /foam3
-/journals
 /src
 pom.js
 build.sh
@@ -522,7 +527,6 @@ foam.POM({
 <!-- List all links here -->
 
 [foam-repo]: https://github.com/kgrgreer/foam3
-[foam-recipes]: https://github.com/VesnaSUG/FOAM-Recipes
 [foam-pom-spec]: https://github.com/kgrgreer/foam3/blob/development/doc/guides/POM.md
 [foam-install]: https://github.com/kgrgreer/foam3/blob/development/INSTALL.md
 [foam-intro]: https://docs.google.com/presentation/d/1yT6Yb5aJJ3OXD3n_8GKC_vtTs_rxJpzOQRgU1Oa_1r4/edit?usp=sharing
