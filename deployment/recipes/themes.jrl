@@ -1,0 +1,10 @@
+// Modify default FOAM theme
+p({
+  "class":"foam.core.theme.Theme",
+  "id":"79B87FC0-C622-417A-A14A-2A04DD348CBD",
+  "spid":"recipes",
+  "name":"recipes",
+  "registrationGroup":"recipes",
+  "appName":"undefined",
+  "defaultMenu": ["recipes.recipe"]
+})

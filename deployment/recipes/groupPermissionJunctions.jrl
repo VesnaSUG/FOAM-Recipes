@@ -1,0 +1,23 @@
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"user.readByGroup.recipes"})
+
+// FOAM
+// simple password management
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.reset-password"})
+
+// spid
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"serviceprovider.read.recipes"})
+
+// Password
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.passwordDAO"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.password"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"password.create"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"password.read.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"password.update.*"})
+
+// specific model
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.recipeDAO"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.create"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.read.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.update.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.delete.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.recipes.recipe"})
