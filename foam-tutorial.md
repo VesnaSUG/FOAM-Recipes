@@ -410,7 +410,7 @@ Our <code>Recipe</code> model is not very interesting yet. Ultimately, we would 
 ![recipe-schema][recipe-schema]
 
 
-Let's start by adjusting the <code>Recipe</code> model. Since <code>Recipe</code> references a recipe type ENUM, let's create a model for that categorization first by creating a file <code>src/com/foamdev/cook/RecipeCategory</code> with the following content:
+Let's start by adjusting the <code>Recipe</code> model. Since <code>Recipe</code> references a recipe type ENUM, let's create a model for that categorization first by creating a file <code>src/com/foamdev/cook/RecipeCategory.js</code> with the following content:
 
 ```
 foam.ENUM({
@@ -442,8 +442,7 @@ foam.CLASS({
 
   tableColumns: [
     'name',
-    'description',
-    'category'
+    'description'
   ],
 
   searchColumns: [
@@ -453,7 +452,7 @@ foam.CLASS({
 
   properties: [
     {
-      class: 'String',
+      class: 'Long',
       name: 'id',
       createVisibility: 'HIDDEN',
       updateVisibility: 'RO'
@@ -464,10 +463,6 @@ foam.CLASS({
       required: true
     },
     {
-      class: 'String',
-      name: 'description'
-    },
-    {
       class: 'Enum',
       of: 'com.foamdev.cook.RecipeCategory',
       name: 'category',
@@ -475,13 +470,13 @@ foam.CLASS({
     },
     {
       class: 'String',
-      name: 'source'
+      name: 'description'
     }
   ],
 
   methods: [
     function sampleMethod() {
-      return 'Hello From Recipe World!';
+      return 'Hello World!';
     },
     function toSummary() {
       return this.name;
@@ -491,7 +486,6 @@ foam.CLASS({
     }
   ]
 });
-
 ```
 
 Most of the adjustments are simple to decipher, except the <code>category</code> property. The possible values for this property are the values enumerated in the <code>RecipeCategory</code> ENUM we created earlier. 

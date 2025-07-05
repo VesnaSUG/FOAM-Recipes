@@ -14,7 +14,7 @@ foam.CLASS({
 
   searchColumns: [
     'name',
-    'description'
+    'category'
   ],
 
   properties: [
@@ -28,6 +28,12 @@ foam.CLASS({
       class: 'String',
       name: 'name',
       required: true
+    },
+    {
+      class: 'Enum',
+      of: 'com.foamdev.cook.RecipeCategory',
+      name: 'category',
+      value: 'OTHER'
     },
     {
       class: 'String',
