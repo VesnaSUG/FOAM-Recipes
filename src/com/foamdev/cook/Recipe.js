@@ -8,7 +8,9 @@ foam.CLASS({
   ],
 
   tableColumns: [
+    'id',
     'name',
+    'category',
     'description'
   ],
 
