@@ -3,6 +3,8 @@
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [FOAM-Recipes](#foam-recipes)
+- [Initial Setup](#initial-setup)
+  - [Next Step](#next-step)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
