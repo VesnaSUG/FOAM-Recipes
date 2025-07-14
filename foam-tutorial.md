@@ -378,7 +378,12 @@ Clicking on the Recipe in the left navigation menu should bring you to the Recip
 
 ![app-screen-1][app-screen-1]
 
-Notice how much functionality you already got by just creating a simple model and connecting to the FOAM core.
+Notice how much functionality you already got by just creating a simple model and connecting to the FOAM core. 
+
+Another interesting thing to point out is the presence of the demo user. If you recall in the setup script we only added the admin. The demo user however is only 
+available if you run the application with the option <code>-Jdemo</code>. This instructs the application to load the additional journals, in this case <code>deployment/demo</code>
+that was copied for by the setup script. You can create your own journals that you can use this way, by going to the runtime journals directory under /opt and lifting the entries into
+a different file, then including it at startup with the <code>-J</code> option. For more info see the chapter on [Journal Merging](#Journal-Merging).
 
 > [!IMPORTANT]
 > To stop the FOAM server, type in <code>CTRL</code>+C twice.
@@ -536,16 +541,19 @@ You can always adjust the default table columns and filters by editing the <code
     'category'
   ],
 ```
+
+## Journal Merging
+
 // TODO Vesna - to be continued ...
-- explain journal merging, demo user above
-- fix the testing section since this is not generated with the generate tests option
+- further explain journal merging, save created recipies from the win machine and check it in
 - add a section on the high level system structure and some core services
 - add a section on debugging tips
 - create the rest of the models "off-line" and zip them for download (correct the schema to fully match)
 - create some meaningful full entries and "import" them, explain search filtering feature
 - test the clone mode and write up README.md how to run if you do not follow along
 
-
+# Appendix
+[FAOM Guides][foam-guides]
 
 <!-- List all links here -->
 
@@ -560,3 +568,4 @@ You can always adjust the default table columns and filters by editing the <code
 [recipe-schema]: images/RecipeDBSchema.png
 [github-ssh]: https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 [foam-dao]: https://github.com/kgrgreer/foam3/blob/development/src/foam/dao/DAO.js
+[foam-guides]: https://github.com/kgrgreer/foam3/tree/development/doc/guides
