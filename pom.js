@@ -4,7 +4,7 @@ foam.POM({
   projects: [
     { name: 'foam3/pom'},
     { name: 'src/com/foamdev/cook/pom'},
-    { name: 'deployment/recipes/pom' }
+    { name: 'journals/pom' }
   ],
   licenses: `
     // Add your license header here

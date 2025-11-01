@@ -81,7 +81,7 @@ while still in the *foam3* directory, execute the following:
 
 ```
 # from foam3 directory
-./build.sh -T+setup/Project --type:simple --appName:Recipes --modelName:Recipe --package:com.foamdev.cook --adminPassword:demopassword
+./build.sh -T+setup/Project --appName:Recipes --modelName:Recipe --package:com.foamdev.cook --adminPassword:demopassword --genJava,createProject
 # cd back to your root directory
 cd ..
 ```
@@ -95,8 +95,8 @@ Your application directory should now look similar to this:
 ```
 /deployment
   /demo
-  /recipes
   /test
+/journals
 /foam3
 /src
 pom.js
@@ -252,7 +252,11 @@ from two interfaces, <code>foam.core.auth.CreatedAware</code> and <code>foam.cor
 
 ## FOAM Journals
 
- A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "put" lines:
+ A journal is a simple JSON-like configuration file used to store application data. Journal files are suitable for simple configuration data containing only a few records, and for larger in-memory databases, potentially containing millions of records. Journal files are append-only, meaning when data is added, updated, or removed, changes are only appended to the end of the file, but none of its contents are updated or removed. Updates are performed by recoding, or journalling, a list of desired changes. These changes will appear in the journal as either "create" lines:
+```
+  c({<json-data-here>});
+```
+or "put" (update) lines:
 ```
   p({<json-data-here>});
 ```
@@ -263,6 +267,10 @@ or "remove" lines:
 For the run-time journals, before each update there may be a line which declares who made the change and when they made it:
 ```
   // Modified by Kevin Greer (49393173) at 2025-05-20T14:53:26.590-0400
+```
+The run-time journals also add a `version` line noting a change in the application version.
+```
+  v({"version":<application-version>})
 ```
 The advantages of journal files are that they can be updated quickly, no old data is lost (and so updates or reverts can be reversed),
 they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
