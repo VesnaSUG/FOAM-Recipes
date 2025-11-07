@@ -33,11 +33,48 @@ If you are building the application from *scratch*, the next step is to go to th
 
 If you only wish to run and explore the application, clone this repository, then:
 
+Add FOAM as a submodule to the repository
+
 ```
-TODO add the rest of instructions to run the app
+git submodule add git@github.com:kgrgreer/foam3.git
+git submodule update --init --recursive --rebase --force
+
 ```
 
+And install the generic npm packages that FOAM depends on
 
+```
+#cd into the foam3 sub-module directory
+cd foam3/
+./build.sh --install
+
+#cd back to the main directory
+cd ../
+
+```
+
+To run the application, use the following command
+
+```
+./build.sh -Jdemo
+
+```
+
+You can open your application in the web browser at http://localhost:8080/. Use one of the following credentials at the logging screen:
+
+```
+# administrator - full access
+user: admin
+password: badpassword
+
+# regular non-priveledged user - can only interact with Recipes.
+user: demo
+password: demopassword
+
+```
+
+> [!IMPORTANT]
+> To stop the FOAM server, type in <code>CTRL</code>+C twice.
 
 <!-- List all links here -->
 

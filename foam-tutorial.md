@@ -25,7 +25,7 @@
 This tutorial will guide you through creating of a new project using FOAM. FOAM stands for "Feature-Oriented Active Modeller", and it is a framework converting high-level software specifications, called "models", into useful executable software components, called "features". FOAM is cross-language and cross-platform, meaning that it can be used as JS, Java and Swift, and for both client and server software.
 
 The tutorial will cover the initial setup and an application creation by creating a cooking recipe database. The tutorial assumes that you 
-already have <code>Java</code>, <code>Node.js</code> and <code>Maven</code> installed in your environment. If you need to install these, helpful tips can be found in the [FOAM installation instructions][foam-install]. 
+already have <code>Java</code>, <code>Node.js</code> and <code>Maven</code> installed in your environment. If you need to install these, helpful tips can be found in the [FOAM installation instructions][foam-install]. This tutorial also assumes that if you are using a Windows device, you are using WSL.
 
 > [!IMPORTANT]
 > Note that you do not need to build FOAM in isolation for the tutorial. We will do this step when we add FOAM as a git sub-module to our project.
@@ -81,7 +81,7 @@ while still in the *foam3* directory, execute the following:
 
 ```
 # from foam3 directory
-./build.sh -T+setup/Project --appName:Recipes --modelName:Recipe --package:com.foamdev.cook --adminPassword:demopassword --genJava,createProject
+./build.sh -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:badpassword --genJava,createProject 
 # cd back to your root directory
 cd ..
 ```
@@ -129,7 +129,7 @@ foam.POM({
   projects: [
     { name: 'foam3/pom'},
     { name: 'src/com/foamdev/cook/pom'},
-    { name: 'deployment/recipes/pom' }
+    { name: 'journals/pom' }
   ],
   licenses: `
     // Add your license header here
@@ -147,7 +147,7 @@ foam.POM({
 
 ```
 
-Let's look briefly at the purpure of each of the elements in this file:
+Let's look briefly at the purpose of each of the elements in this file:
 
 <table>
 <thead>
@@ -276,12 +276,12 @@ The advantages of journal files are that they can be updated quickly, no old dat
 they are human readable, they provide an audit trail of who and when changes were made, they're very fault tolerant, don't require external
 database hosting or configuration, and provide excellent performance for many use-cases.
 
-For our example, groups, menus, permissions, and services journals are under <code>deployment/recipes</code> directory. 
+For our example, groups, menus, permissions, and services journals are under <code>journals</code> directory. 
 
 
 ### FOAM DAO Service
 
-We'll gain more understanding on the content of the generated journal files as we go. For now, let's focus on the journal file <code>deployment/recipes/services.jrl</code> that sets up one of the key FOAM services, DAO:
+We'll gain more understanding on the content of the generated journal files as we go. For now, let's focus on the journal file <code>journals/services.jrl</code> that sets up one of the key FOAM services, DAO:
 
 ```
 p({
@@ -335,7 +335,7 @@ familiar with time.
 
 ### Menu Navigation 
 
-Let's look at one more file, <code>deployment/recipes/menus.jrl</code> before we run our application. A **menu** is used to make our entity
+Let's look at one more file, <code>journals/menus.jrl</code> before we run our application. A **menu** is used to make our entity
 visible in FOAM. Upon initial creation the file should have the following content:
 
 ```
@@ -371,13 +371,13 @@ $ deployment/demo/run.sh
 $ ./build.sh -Jdemo
 ```
 
-This we trigger the build and start the server. You can open your application in the web browser at http://localhost:8080/. 
+This will trigger the build and start the server. You can open your application in the web browser at http://localhost:8080/. 
 Use one of the following credentials at the logging screen:
 
 ```
 # administrator - full access
 user: admin
-password: demopassword
+password: badpassword
 
 # regular non-priveledged user - can only interact with Recipes.
 user: demo
@@ -563,7 +563,7 @@ You can always adjust the default table columns and filters by editing the <code
 - test the clone mode and write up README.md how to run if you do not follow along
 
 # Appendix
-[FAOM Guides][foam-guides]
+[FOAM Guides][foam-guides]
 
 <!-- List all links here -->
 
