@@ -81,7 +81,7 @@ while still in the *foam3* directory, execute the following:
 
 ```
 # from foam3 directory
-./build.sh -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:badpassword --genJava,createProject 
+./build.sh -T+setup/Project --appName:Recipe --package:com.foamdev.cook --adminPassword:badpassword
 # cd back to your root directory
 cd ..
 ```
