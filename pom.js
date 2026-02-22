@@ -1,6 +1,10 @@
 foam.POM({
   name: 'recipes',
   excludes: [ '*' ],
+  setFlags: {
+    test: true,
+    dev:true
+  },
   projects: [
     { name: 'foam3/pom'},
     { name: 'src/com/foamdev/cook/pom'},

@@ -1,1 +1,3 @@
 p({"class":"com.foamdev.cook.test.RecipeTest","id":"RecipeTest","description":"Recipe Id tests"})
+p({class:"foam.core.test.Test",id:"testRecipeMethods",testSuite:"testRecipe",description:"Recipe Tests",language:0,code:"let recipe = com.foamdev.cook.Recipe.create();\ntest(recipe.toSummary() == \"\", 'Recipe toSummary is initially empty');\n\nrecipe.name = 'Fried chicken';\ntest(recipe.toSummary() == \"Fried chicken\", 'Recipe toSummary is equal to name');",lastModifiedBy:42,lastModified:1755376373973})
+p({"class":"com.foamdev.cook.test.RecipeTestMethods","id":"RecipeTestMethods","description":"Test Recipe methods in JavaScript", language:0})

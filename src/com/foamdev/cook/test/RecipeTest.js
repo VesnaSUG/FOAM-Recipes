@@ -15,9 +15,9 @@ foam.CLASS({
       name: 'runTest',
       javaCode: `
         var recipe = new Recipe();
-        test ( SafetyUtil.isEmpty(recipe.getId()), "ID empty before create");
+        test ( recipe.getId() == 0l, "ID empty before create");
         recipe = (Recipe) ((DAO) x.get("recipeDAO")).put(recipe);
-        test ( ! SafetyUtil.isEmpty(recipe.getId()), "ID set after create");
+        test ( recipe.getId() != 0l, "ID set after create");
       `
     }
   ]
