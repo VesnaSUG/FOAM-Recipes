@@ -332,6 +332,7 @@ interface DAO extends Sink {
   DAO    limit(count)
   DAO    skip(count)
   DAO    orderBy(...comparators)
+  DAO    inX(x)
 }
 ```
 
