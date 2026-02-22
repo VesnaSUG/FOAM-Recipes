@@ -786,6 +786,23 @@ build/journals/menus.0:    label = "Demo Recipes"
 
 Similarly, runtime journals are replayed after static journals (`.0`), so any changes made during application execution will override the static configuration.
 
+# Placeholder
+// TODO Vesna - to be continued ...
+
+
+add more info on DAO and sink, it is too skimpy now
+-generate the app again to adjust the structure (but manually modify this one to match)
+add a section on client side tests/make the test sestion more robust
+add a section on the high level system structure and some core services
+add a section on debugging tips
+further develop the app to demonstrate all key concepts in the cheat sheet
+create the rest of the models "off-line" and zip them for download (correct the schema to fully match)
+create some meaningful full entries and "import" them, explain search filtering feature
+test the clone mode and write up README.md how to run if you do not follow along
+add the tutorial as MD to foam3 (this would make it easier for claude code to use as guidance, the first step could be just to add it to the doc/guides)
+
+
+
 # Appendix
 [FOAM Guides][foam-guides]
 
