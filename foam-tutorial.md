@@ -397,7 +397,7 @@ Clicking on the Recipe in the left navigation menu should bring you to the Recip
 
 ![app-screen-1][app-screen-1]
 
-Notice how much functionality you already got by just creating a simple model and connecting to the FOAM core. 
+Notice how much functionality you already have by just creating a simple model and connecting to the FOAM core. 
 
 Another interesting thing to point out is the presence of the demo user. If you recall in the setup script we only added the admin. The demo user however is only 
 available if you run the application with the option <code>-Jdemo</code>. This instructs the application to load the additional journals, in this case <code>deployment/demo</code>
