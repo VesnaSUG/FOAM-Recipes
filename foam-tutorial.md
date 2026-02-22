@@ -68,7 +68,7 @@ cd <project root>
 git init
 ```
 
-One of the conveniences of FOAM is that allows customizations to the predefined models. For that reason, FOAM is included in your project as a GIT sub-module, instead of a package.
+One of the conveniences of FOAM is that allows customizations (called "refinements") to the predefined models. For that reason, FOAM is included in your project as a GIT sub-module, instead of a package.
 Therefore our next step is to go to the [FOAM Repository][foam-repo] and grab the repository's URL, then link to it as a sub-module for our project. Here is an example how to do it using the ssh github link:
 
 ```
