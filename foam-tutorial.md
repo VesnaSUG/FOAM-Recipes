@@ -408,22 +408,220 @@ a different file, then including it at startup with the <code>-J</code> option. 
 > To stop the FOAM server, type in <code>CTRL</code>+C twice.
 
 # Testing
-As you develop, also consider creating test cases to exercise your models and application. An example is provided in <code>src/com/foamdev/cook/test/RecipeTest.js</code>.
 
-The FOAM build executes tests registered in journals named <code>tests.jrl</code>, typically co-located with the test files themselves. In our case, this is <code>src/com/foamdev/cook/test/tests.jrl</code>. If additional configuration is required for a test, such as test data or special service configuration, then by convention those journals are stored in <code>deployment/test/</code>. The build will automatically look for this deployment directory when running tests.
+FOAM provides a testing harness for implementing unit tests. Test cases can be either modeled FOAM classes or scripts, and can target both Java (server-side) and JavaScript (client-side).
 
-Tests are executed with the build task **--java-tests**:
+## Running Tests
+
+Tests are executed using build tasks:
 
 ```bash
-# run all test cases - includes FOAM test cases along with your application test cases.
-./build.sh --java-tests
+# Run all server and client tests
+./build.sh run-tests
 
-# run one test case
-./build.sh --java-tests:RecipeTest
+# Run only server-side (Java) tests
+./build.sh server-tests
 
-# run a selection of test cases (comma separated)
-./build.sh --java-tests:Test1,Test2
+# Run only client-side (JavaScript) tests
+./build.sh client-tests
+
+# Run specific test cases by id
+./build.sh run-tests:RecipeTest,RecipeTestMethods
+
+# Exclude specific tests (prefix with -)
+./build.sh run-tests:-SlowTest,-IntegrationTest
 ```
+
+Test output shows success or failure for each test:
+
+```
+RecipeTest
+   ✓ SUCCESS: ID empty before create
+   ✓ SUCCESS: ID set after create
+```
+
+## Creating Modeled Test Cases
+
+Test cases are FOAM models that extend a test base class. Place tests in a `test` subdirectory within your package.
+
+### Server-Side Tests (Java)
+
+For Java tests, extend `foam.core.test.Test` and implement `runTest` with `javaCode`. Here's our example from <code>src/com/foamdev/cook/test/RecipeTest.js</code>:
+
+```javascript
+foam.CLASS({
+  package: 'com.foamdev.cook.test',
+  name: 'RecipeTest',
+  extends: 'foam.core.test.Test',
+
+  javaImports: [
+    'com.foamdev.cook.*',
+    'foam.dao.DAO'
+  ],
+
+  methods: [
+    {
+      name: 'runTest',
+      javaCode: `
+        var recipe = new Recipe();
+        test(recipe.getId() == 0l, "ID empty before create");
+
+        recipe = (Recipe) ((DAO) x.get("recipeDAO")).put(recipe);
+        test(recipe.getId() != 0l, "ID set after create");
+      `
+    }
+  ]
+});
+```
+
+### Client-Side Tests (JavaScript)
+
+For JavaScript tests, extend `foam.core.test.JSTest` and implement `runTest` as a JavaScript function. Here's an example from <code>src/com/foamdev/cook/test/RecipeTestMethods.js</code>:
+
+```javascript
+foam.CLASS({
+  package: 'com.foamdev.cook.test',
+  name: 'RecipeTestMethods',
+  extends: 'foam.core.test.JSTest',
+
+  requires: [ 'com.foamdev.cook.Recipe' ],
+
+  methods: [
+    {
+      name: 'runTest',
+      args: ['Context x'],
+      code: function runTest(x) {
+        // debugger;
+        let recipe = this.Recipe.create();
+        x.test(recipe.toSummary() == "", 'Recipe toSummary is initially empty');
+
+        recipe.name = 'Fried chicken';
+        x.test(recipe.toSummary() == "Fried chicken", 'Recipe toSummary is equal to name');
+      }
+    }
+  ]
+});
+```
+
+Note: In Java tests, call `test(condition, message)` directly. In JavaScript tests, call `x.test(condition, message)` using the context parameter.
+
+## Test Organization
+
+### Directory Structure
+
+Tests live in a `test` subdirectory within your package:
+
+```
+src/com/foamdev/cook/
+├── Recipe.js
+├── RecipeCategory.js
+├── pom.js
+└── test/
+    ├── RecipeTest.js        (Java server test)
+    ├── RecipeTestMethods.js (JavaScript client test)
+    ├── tests.jrl            (test registration)
+    └── pom.js               (test pom)
+```
+
+### Registering Tests
+
+Tests must be registered in a `tests.jrl` journal file. Each test case needs an entry:
+
+```javascript
+p({
+  "class": "com.foamdev.cook.test.RecipeTest",
+  "id": "RecipeTest",
+  "description": "Recipe Id tests"
+})
+
+p({
+  "class": "com.foamdev.cook.test.RecipeTestMethods",
+  "id": "RecipeTestMethods",
+  "description": "Test Recipe methods in JavaScript",
+  "language": 0
+})
+```
+
+### Adding Tests to the POM
+
+Create a `pom.js` in your test directory and reference it from the parent pom with the `test` flag:
+
+**test/pom.js:**
+```javascript
+foam.POM({
+  name: 'test',
+  files: [
+    { name: 'RecipeTest',        flags: 'js|java' },
+    { name: 'RecipeTestMethods', flags: 'js|java' }
+  ]
+});
+```
+
+### Understanding POM Flags
+
+The `flags` property in POM file entries controls which build tasks include the file for processing:
+
+- **`js`** - Include in JavaScript build tasks (bundling for client-side)
+- **`java`** - Include in Java build tasks (compilation for server-side)
+- **`js|java`** - Include in both JavaScript and Java builds (the `|` means OR)
+- **`test`** - Only include when running test tasks
+- **`js&test`** - Include in JavaScript builds only when testing (the `&` means AND)
+
+The flags determine *when* a file is processed, not *what* is generated from it. A FOAM model with `flags: 'js|java'` will be included in both build pipelines—FOAM then determines what to generate based on the model's content (e.g., `javaCode` blocks generate Java, JavaScript functions remain JavaScript).
+
+For test files, use `js|java` so the model is available to both build pipelines. The base class determines the test type: `foam.core.test.Test` creates server-side Java tests, while `foam.core.test.JSTest` creates client-side JavaScript tests.
+
+When referencing a test directory from a parent POM, use `flags: 'test'` so test code is only included during test runs, not in production builds.
+
+## Running Tests from the Application UI
+
+For test-driven development, you can include test infrastructure in a running application by adding `--flags:test` to your build command:
+
+```bash
+./build.sh -Jdemo --flags:test
+```
+
+Once the application is running, log in and navigate to the test menu at `#admin-tests`. From this interface you can:
+
+- Browse all registered test cases
+- Run individual JavaScript (client-side) tests interactively
+- View test results immediately
+- Use "Run Client" to execute all JavaScript tests
+- Use "Run Failed Client" to re-run only previously failed tests
+
+This workflow is particularly powerful for debugging because you can set breakpoints in your browser's developer tools and step through the code as tests execute. When a test fails, you can:
+
+1. Open the browser's developer tools (F12)
+2. Set breakpoints in your test code or the code being tested
+3. Run the failing test from the UI
+4. Step through the execution to understand why it fails
+5. Fix the issue and re-run until the test passes
+
+This tight feedback loop—running tests with full debugger support—makes test-driven development practical and efficient. You can even include `debugger;` statements in your test code (as shown in the RecipeTestMethods example) to automatically pause execution at specific points.
+
+Note: Running server-side tests from the UI is not recommended as it may cause the UI to become unresponsive. For server tests, use the command-line `server-tests` task instead.
+
+**Parent pom.js (src/com/foamdev/cook/pom.js):**
+```javascript
+foam.POM({
+  name: 'recipe',
+  projects: [
+    { name: 'test/pom', flags: 'test' }
+  ],
+  files: [
+    { name: 'Recipe',         flags: 'js|java' },
+    { name: 'RecipeCategory', flags: 'js|java' }
+  ]
+});
+```
+
+The `flags: 'test'` ensures the test directory is only included when running tests.
+
+## Test Configuration
+
+If tests require additional configuration (test data, mock services, etc.), place those journals in `deployment/test/`. The build automatically includes this deployment directory when running tests.
+
+For more details, see the [FOAM Testing Guide][foam-testing-guide].
 
 # Modify FOAM Recipe Model
 
@@ -811,6 +1009,7 @@ add the tutorial as MD to foam3 (this would make it easier for claude code to us
 [foam-repo]: https://github.com/kgrgreer/foam3
 [foam-pom-spec]: https://github.com/kgrgreer/foam3/blob/development/doc/guides/POM.md
 [foam-build-guide]: https://github.com/kgrgreer/foam3/blob/development/doc/guides/Build.md
+[foam-testing-guide]: https://github.com/kgrgreer/foam3/blob/development/doc/guides/Testing.md
 [foam-install]: https://github.com/kgrgreer/foam3/blob/development/INSTALL.md
 [foam-intro]: https://docs.google.com/presentation/d/1yT6Yb5aJJ3OXD3n_8GKC_vtTs_rxJpzOQRgU1Oa_1r4/edit?usp=sharing
 [github-docs-repo]: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-new-repository
