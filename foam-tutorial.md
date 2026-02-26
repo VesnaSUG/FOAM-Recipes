@@ -362,6 +362,9 @@ interface DAO {
 }
 ```
 
+> [!IMPORTANT]
+> In JavaScript, DAO methods are asynchronous and return Promises. For example, `put()` returns `Promise<FObject>`, `find()` returns `Promise<FObject>`, and `select()` returns `Promise<Sink>`. Use `.then()` or `await` to access the results.
+
 A Sink is a destination object that receives and processes query results from `select()`. Here is the Sink interface:
 
 ```
