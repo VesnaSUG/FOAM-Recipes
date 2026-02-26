@@ -346,27 +346,44 @@ familiar with time. With the journal above, we add the recipes DAO service to FO
 A DAO, or Data Access Object, is an object which provides access to a collection of data. Here is a simplified pseudo code for the DAO interface:
 
 ```
-interface DAO extends Sink {
-  void   put(obj, opt_sink)
-  void   remove(obj)
-  void   removeAll()
-  void   find(query, sink)
-  Sink   select(sink)
-  void   listen(sink)
-  void   pipe(sink)
-  void   unlisten(sink)
-  DAO    where(query)
-  DAO    limit(count)
-  DAO    skip(count)
-  DAO    orderBy(...comparators)
-  DAO    inX(x)
+interface DAO {
+  FObject  put(obj)
+  FObject  find(id)
+  FObject  remove(obj)
+  void     removeAll()
+  Sink     select(sink)
+  void     listen(sink)
+  void     unlisten(sink)
+  DAO      where(predicate)
+  DAO      limit(count)
+  DAO      skip(count)
+  DAO      orderBy(...comparators)
+  DAO      inX(x)
 }
 ```
+
+A Sink is a destination object that receives and processes query results from `select()`. Here is the Sink interface:
+
+```
+interface Sink {
+  void  put(obj, sub)
+  void  remove(obj, sub)
+  void  eof()
+  void  reset(sub)
+}
+```
+
+FObject (Feature Object) is the base class for all FOAM modeled objects. When you define a model with `foam.CLASS()`, FOAM generates a class that extends FObject. FObjects provide:
+
+- **Properties** with automatic getters/setters, validation, and change notification
+- **Methods** that can be implemented in JavaScript, Java, or both
+- **Serialization** to/from JSON for storage and network transfer
+- **Cloning, comparison, and hashing** out of the box
 
 With a DAO you can do everything you might want to do with a collection of data. The above interface is surprisingly general and powerful, despite its relatively small size. Also note that a DAO is an interface, not a specific implementation. There are many DAO implementations that let you
 store your data in different underlying databases or other storage mechanisms. No mater which DAO implementation you're using, they all have the same interface and your client code can work with any implementation without change. Journal files, for example, are accessed through the "JDAO" DAO implementation.
 
-Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro] and by inspecting the [model][foam-dao] for the DAO interface.
+Learn more about DAOs in the [Introduction to FOAM Programming][foam-intro] and by inspecting the [model][foam-dao] for the DAO interface. For an in-depth explanation of how DAOs and Sinks work together, see [Source-to-Sink Architecture](#source-to-sink-architecture) in the Appendix.
 
 
 ### Menu Navigation 
