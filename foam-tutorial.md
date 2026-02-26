@@ -857,15 +857,27 @@ dao.select(sink);
 - **Sink**: The destination object that receives/accumulates results
 - **Flow**: `select()` streams objects from the DAO (source) to the Sink (destination)
 
+**A note on Promises:** The `select()` method returns a JavaScript Promise. When you call `.then((sink) => { ... })`, the `sink` parameter is the successful return value—a copy of the sink containing the results. Always use this returned sink to access results, not the original sink you passed in. You can also use `async/await` syntax:
+
+```javascript
+// Using .then()
+dao.select(foam.dao.ArraySink.create()).then((sink) => {
+  console.log(sink.array);
+});
+
+// Using async/await (equivalent)
+var sink = await dao.select(foam.dao.ArraySink.create());
+console.log(sink.array);
+```
+
 ### Common Built-in Sinks
 
 #### ArraySink - Collect Results
 
 ```javascript
 // ArraySink - collects results into an array
-var arraySink = foam.dao.ArraySink.create();
-dao.select(arraySink).then(() => {
-  console.log(arraySink.array); // All results
+dao.select(foam.dao.ArraySink.create()).then((sink) => {
+  console.log(sink.array); // All results
 });
 ```
 
@@ -873,9 +885,8 @@ dao.select(arraySink).then(() => {
 
 ```javascript
 // Count - counts matching objects
-var count = foam.mlang.sink.Count.create();
-dao.select(count).then(() => {
-  console.log(count.value); // Number of results
+dao.select(foam.mlang.sink.Count.create()).then((sink) => {
+  console.log(sink.value); // Number of results
 });
 ```
 
@@ -883,20 +894,23 @@ dao.select(count).then(() => {
 
 ```javascript
 // GroupBy - groups results by property
-var groupBy = foam.mlang.sink.GroupBy.create({
+dao.select(foam.mlang.sink.GroupBy.create({
   arg1: MyModel.CATEGORY
+})).then((sink) => {
+  console.log(sink.groups); // Grouped results
 });
-dao.select(groupBy);
 ```
 
 #### Map - Transform Results
 
 ```javascript
 // Map - transforms each result
-var map = foam.mlang.sink.Map.create({
-  arg1: function(obj) { return obj.id; }
+dao.select(foam.mlang.sink.Map.create({
+  arg1: function(obj) { return obj.id; },
+  delegate: foam.dao.ArraySink.create()
+})).then((sink) => {
+  console.log(sink.delegate.array); // Transformed results
 });
-dao.select(map);
 ```
 
 ### Streaming Architecture
@@ -985,18 +999,16 @@ Decorated DAOs → select() → Sink (with possible delegation)
 Count active users by department:
 
 ```javascript
-// Create a GroupBy sink with Count aggregation
-var groupBy = foam.mlang.sink.GroupBy.create({
-  arg1: User.DEPARTMENT,
-  arg2: foam.mlang.sink.Count.create()
-});
-
-// Query active users and group results
+// Query active users and group by department with count
 userDAO
   .where(this.EQ(User.STATUS, 'active'))
-  .select(groupBy)
-  .then(() => {
-    // groupBy.groups contains department → count mapping
+  .select(foam.mlang.sink.GroupBy.create({
+    arg1: User.DEPARTMENT,
+    arg2: foam.mlang.sink.Count.create()
+  }))
+  .then((sink) => {
+    // sink.groups contains department → count mapping
+    console.log(sink.groups);
   });
 ```
 
