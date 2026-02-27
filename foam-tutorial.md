@@ -896,25 +896,46 @@ dao.select(foam.mlang.sink.Count.create()).then((sink) => {
 #### GroupBy - Group Results
 
 ```javascript
-// GroupBy - groups results by property
+// GroupBy - groups results by property with count
 dao.select(foam.mlang.sink.GroupBy.create({
-  arg1: MyModel.CATEGORY
+  arg1: MyModel.CATEGORY,
+  arg2: foam.mlang.sink.Count.create()
 })).then((sink) => {
-  console.log(sink.groups); // Grouped results
+  console.log(sink.groups); // Grouped results with counts
 });
 ```
 
 #### Map - Transform Results
 
+The `Map` sink transforms each result using an **expression**. The `arg1` property expects an object that implements the `foam.mlang.F` interface, which defines an `f(obj)` method that takes an object and returns a transformed value.
+
 ```javascript
-// Map - transforms each result
+// Map using a property reference (properties implement the F interface)
 dao.select(foam.mlang.sink.Map.create({
-  arg1: function(obj) { return obj.id; },
+  arg1: MyModel.ID,  // Property reference extracts the ID from each object
   delegate: foam.dao.ArraySink.create()
 })).then((sink) => {
-  console.log(sink.delegate.array); // Transformed results
+  console.log(sink.delegate.array); // Array of ID values
+});
+
+// Map using a custom expression with the f() method
+dao.select(foam.mlang.sink.Map.create({
+  arg1: { f: function(obj) { return obj.name.toUpperCase(); } },
+  delegate: foam.dao.ArraySink.create()
+})).then((sink) => {
+  console.log(sink.delegate.array); // Array of uppercase names
+});
+
+// Using the FUNC helper for custom transformations (requires foam.mlang.predicate.Func)
+dao.select(this.MAP(
+  this.FUNC(function(obj) { return { id: obj.id, label: obj.name }; }),
+  foam.dao.ArraySink.create()
+)).then((sink) => {
+  console.log(sink.delegate.array); // Array of {id, label} objects
 });
 ```
+
+> **Note:** The `foam.mlang.F` interface is fundamental to FOAM's expression system. Any object with an `f(obj)` method can be used as an expression. This includes property references (e.g., `MyModel.NAME`), built-in expressions (e.g., `ADD`, `DOT`), and custom expression objects.
 
 ### Streaming Architecture
 
@@ -930,6 +951,7 @@ dao
 ```
 
 In this example:
+- **Predicates**: `this.EQ()` is a FOAM predicate expression (from the `mlang` library) that creates an equality comparison. Other predicates include `GT`, `LT`, `GTE`, `LTE`, `AND`, `OR`, `NOT`, `CONTAINS`, etc. To use them, add the predicates to your model's `requires` array (e.g., `'foam.mlang.predicate.Eq'`), then reference them via `this.Eq.create()` or the shorthand `this.EQ()`.
 - **Query specification**: `where()`, `skip()`, and `limit()` build up the query parameters
 - **Execution**: `select(sink)` executes the query against the DAO (source)
 - **Streaming**: Results flow from the DAO to the Sink (destination)
@@ -943,14 +965,17 @@ You can create custom sinks to process data as it flows:
 foam.CLASS({
   name: 'CustomSink',
   implements: ['foam.dao.Sink'],
-  
+
   methods: [
     function put(obj, sub) {
       // Process each object as it arrives
       console.log('Received:', obj);
       // Do custom processing, aggregation, etc.
+
+      // Optionally stop receiving more results:
+      // sub.detach();
     },
-    
+
     function eof() {
       // Called when stream is complete
       console.log('All data received');
@@ -958,6 +983,49 @@ foam.CLASS({
   ]
 });
 ```
+
+The `sub` parameter in `put(obj, sub)` is a **subscription** (implementing `foam.lang.Detachable`) that gives the sink control over the data stream. Calling `sub.detach()` signals that the sink no longer wants to receive more objects, allowing the DAO to stop processing early. This is useful for implementing limits or early termination - for example, FOAM's built-in `LimitedSink` uses `sub.detach()` to stop after receiving the requested number of results.
+
+This JavaScript-only sink works because when querying a remote DAO (e.g., over HTTP), FOAM internally uses an `ArraySink` to transport results across the network. The results are then copied to your custom sink on the client side, calling `put()` for each object.
+
+For sinks that need to execute on both client and server, provide both JavaScript and Java implementations:
+
+```javascript
+foam.CLASS({
+  name: 'CustomSink',
+  implements: ['foam.dao.Sink'],
+
+  methods: [
+    {
+      name: 'put',
+      args: [
+        { name: 'obj', type: 'FObject' },
+        { name: 'sub', type: 'Detachable' }
+      ],
+      code: function put(obj, sub) {
+        // JavaScript implementation (client-side)
+        console.log('Received:', obj);
+      },
+      javaCode: `
+        // Java implementation (server-side)
+        System.out.println("Received: " + obj);
+      `
+    },
+
+    {
+      name: 'eof',
+      code: function eof() {
+        console.log('All data received');
+      },
+      javaCode: `
+        System.out.println("All data received");
+      `
+    }
+  ]
+});
+```
+
+When a sink has both `code` (JavaScript) and `javaCode`, it can be executed on either the client or server depending on where the DAO operation is performed.
 
 ### Sink Delegation
 
@@ -968,6 +1036,7 @@ Sinks can be **composed** through delegation, where one sink processes results a
 var sink = foam.dao.PredicatedSink.create({
   predicate: someCondition,
   delegate: foam.mlang.sink.Map.create({
+    arg1: MyModel.NAME,  // Expression to extract/transform (required)
     delegate: foam.dao.ArraySink.create()
   })
 });
@@ -976,8 +1045,8 @@ dao.select(sink);
 ```
 
 In this pattern:
-- `PredicatedSink` filters incoming results
-- Filtered results are delegated to `Map` for transformation
+- `PredicatedSink` filters incoming results based on `predicate`
+- Filtered results are delegated to `Map` which applies the `arg1` expression
 - Transformed results are delegated to `ArraySink` for collection
 
 This is **delegation**, not chaining - each sink delegates to the next rather than forming a pipeline.
@@ -1005,15 +1074,14 @@ Count active users by department:
 // Query active users and group by department with count
 userDAO
   .where(this.EQ(User.STATUS, 'active'))
-  .select(foam.mlang.sink.GroupBy.create({
-    arg1: User.DEPARTMENT,
-    arg2: foam.mlang.sink.Count.create()
-  }))
+  .select(this.GROUP_BY(User.DEPARTMENT))
   .then((sink) => {
     // sink.groups contains department → count mapping
     console.log(sink.groups);
   });
 ```
+
+Note: This example uses the short form `this.GROUP_BY()` compared to the long form `foam.mlang.sink.GroupBy.create()` shown earlier. Also, `arg2` defaults to `Count`, so you only need to specify it if you want a different aggregation sink.
 
 ### Summary
 
