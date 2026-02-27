@@ -1025,7 +1025,11 @@ foam.CLASS({
 });
 ```
 
-When a sink has both `code` (JavaScript) and `javaCode`, it can be executed on either the client or server depending on where the DAO operation is performed.
+When a sink has both `code` (JavaScript) and `javaCode`, the **sink itself** can be executed on either the client or server depending on where the DAO operation is performed.
+
+**Why server-side sink execution matters:** If a sink only has JavaScript code, data must be transferred from the server to the client *before* the sink can process it. For operations like counting or aggregation, this is inefficient - you'd transfer thousands of objects just to count them. When a sink has `javaCode`, it can execute directly on the server where the data resides. Only the *result* (e.g., a count value, a sum, grouped totals) is sent back to the client, dramatically reducing network traffic.
+
+For example, FOAM's built-in `Count` sink has both JavaScript and Java implementations. When you call `dao.select(COUNT())` against a server-side DAO, the counting happens on the server and only the final count number is returned - not every object in the DAO.
 
 ### Sink Delegation
 
