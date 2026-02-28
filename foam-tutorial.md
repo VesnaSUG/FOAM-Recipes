@@ -7,6 +7,7 @@
 - [Generate Application](#generate-application)
   - [Application Structure](#application-structure)
   - [FOAM Model - Recipe.js](#foam-model---recipejs)
+    - [Understanding FOAM Models](#understanding-foam-models)
   - [FOAM Journals](#foam-journals)
     - [FOAM DAO Service](#foam-dao-service)
     - [Menu Navigation](#menu-navigation)
@@ -29,6 +30,17 @@
   - [Journal Merging](#journal-merging)
 - [Placeholder](#placeholder)
 - [Appendix](#appendix)
+  - [FOAM Model Reference](#foam-model-reference)
+    - [Properties](#properties)
+      - [Property Class Requirement](#property-class-requirement)
+      - [Basic Property Syntax](#basic-property-syntax)
+      - [Property Types by Category](#property-types-by-category)
+      - [Object and Reference Properties](#object-and-reference-properties)
+      - [Collection Properties](#collection-properties)
+      - [Property Features](#property-features)
+    - [Methods](#methods)
+    - [Listeners](#listeners)
+    - [Actions](#actions)
   - [Source-to-Sink Architecture](#source-to-sink-architecture)
     - [The Sink Interface](#the-sink-interface)
     - [Source-to-Sink Flow](#source-to-sink-flow)
@@ -284,8 +296,53 @@ foam.CLASS({
 ```
 
 Here we defined a model for class <code>Recipe</code> that is in the <code>com.foamdev.cook</code> package and has two properties,
-<code>name</code> and <code>description</code>, a few sample methods. The model derives 
-from two interfaces, <code>foam.core.auth.CreatedAware</code> and <code>foam.core.auth.LastModifiedAware</code>whose default implementation adds the timestamp and last modified properties. 
+<code>name</code> and <code>description</code>, a few sample methods. The model derives
+from two interfaces, <code>foam.core.auth.CreatedAware</code> and <code>foam.core.auth.LastModifiedAware</code> whose default implementation adds the timestamp and last modified properties.
+
+### Understanding FOAM Models
+
+A FOAM model is a high-level specification that FOAM compiles into executable code for multiple languages (JavaScript, Java, Swift). The `foam.CLASS()` declaration defines everything about a class in one place - its data, behavior, relationships, and metadata.
+
+Here's the anatomy of a FOAM class definition:
+
+```javascript
+foam.CLASS({
+  package: 'com.example.project',     // Java-style package namespace
+  name: 'MyModel',                    // Class name
+  extends: 'foam.core.BaseModel',     // Single inheritance (optional)
+  implements: [                       // Interfaces/traits (optional)
+    'foam.core.auth.CreatedAware',
+    'foam.core.auth.LastModifiedAware'
+  ],
+  requires: [                         // Dependencies for context-aware creation
+    'foam.dao.ArraySink',
+    'com.example.project.OtherModel'
+  ],
+  imports: ['userDAO', 'currentUser'], // Inject from context
+  exports: ['selectedItem'],           // Export to child context
+
+  properties: [ ... ],                 // Data members
+  methods: [ ... ],                    // Instance methods
+  listeners: [ ... ],                  // Pre-bound callback methods
+  actions: [ ... ]                     // User-triggered operations
+});
+```
+
+**Key Model Sections:**
+
+| Section | Purpose |
+|---------|---------|
+| `package` + `name` | Fully qualified class identifier |
+| `extends` | Single parent class inheritance |
+| `implements` | Mix in interfaces/traits for shared behavior |
+| `requires` | Declare dependencies for context-aware object creation |
+| `imports` / `exports` | Context-based dependency injection |
+| `properties` | Typed data members with validation, defaults, and reactivity |
+| `methods` | Instance functions; can have both `code` (JS) and `javaCode` |
+| `listeners` | Methods pre-bound to `this`; safe to use as callbacks |
+| `actions` | User-triggered operations with UI integration |
+
+We will explore each of these concepts in detail as we develop our Recipe application. For a comprehensive reference, see [FOAM Model Reference](#foam-model-reference) in the Appendix.
 
 ## FOAM Journals
 
@@ -824,22 +881,389 @@ The `-J` flag lets you include environment-specific journals from the `deploymen
 For a comprehensive explanation of journal merging, including static vs runtime journals, concatenation order, deployment conventions, and production builds, see [Journal Merging In-Depth](#journal-merging-in-depth) in the Appendix.
 
 # Placeholder
-// TODO Vesna - to be continued ...
+// TODO - to be continued ...
 
-
-add more info on DAO and sink, it is too skimpy now
--generate the app again to adjust the structure (but manually modify this one to match)
-add a section on the high level system structure and some core services
-add a section on debugging tips
-further develop the app to demonstrate all key concepts in the cheat sheet
-create the rest of the models "off-line" and zip them for download (correct the schema to fully match)
-create some meaningful full entries and "import" them, explain search filtering feature
-test the clone mode and write up README.md how to run if you do not follow along
-add the tutorial as MD to foam3 (this would make it easier for claude code to use as guidance, the first step could be just to add it to the doc/guides)
+* -generate the app again to adjust the structure (but manually modify this one to match)
+* add a section on the high level system structure and some core services
+* add a deep dive on models and long form
+* add a section on views, and custom views
+* add a section on debugging tips
+* further develop the app to demonstrate all key concepts in the cheat sheet
+* add a section on services
+* create the rest of the models "off-line" and zip them for download (correct the schema to fully match)
+* create some meaningful full entries and "import" them, explain search filtering feature
+* test the clone mode and write up README.md how to run if you do not follow along
+* add the tutorial as MD to foam3 (this would make it easier for claude code to use as guidance, the first step could be just to add it to the doc/guides)
 
 
 
 # Appendix
+
+## FOAM Model Reference
+
+This section provides detailed documentation for FOAM model components. For the basic anatomy, see [Understanding FOAM Models](#understanding-foam-models) in the main tutorial.
+
+### Properties
+
+Properties are typed data members that define the data structure of a FOAM model.
+
+#### Property Class Requirement
+
+All properties **must** have a `class` defined unless they are pure JavaScript (untyped). The `class` specifies the property type and must be a class derived from `Property` (defined in `foam.lang`).
+
+Since `foam.lang` is included by default, you can use short names like `String` instead of the full path `foam.lang.String`. FOAM provides many predefined property types in `foam/lang/types.js`.
+
+Here is an example of how to define properties in a model:
+
+```javascript
+properties: [
+  // Typed property - class is required for cross-language support
+  {
+    class: 'String',              // Short form (foam.lang.String)
+    name: 'name',
+    required: true
+  },
+
+  // Untyped property - pure JavaScript only, no Java/Swift generation
+  'description'                   // Equivalent to { name: 'description' }
+]
+```
+
+> **Note:** Untyped properties (just a name string) work in JavaScript but won't generate proper Java or Swift code. Always use typed properties for cross-language models.
+
+#### Property Definition (Abridged from Property.js)
+
+All property types extend `foam.lang.Property`. Here are the key options available:
+
+```javascript
+foam.CLASS({
+  package: 'foam.lang',
+  name: 'Property',
+
+  properties: [
+    'name',           // Required: property identifier
+    'label',          // UI label (defaults to name "labelized")
+    'documentation',  // Developer-level documentation
+    'help',           // User-level help text for UI
+    { class: 'Boolean', name: 'hidden' },    // Hide from UI
+    { class: 'Boolean', name: 'required' },  // Cannot be null/undefined/empty
+
+    // Default values
+    'value',          // Static default value
+    'factory',        // Function returning default (runs once on first access)
+    'expression',     // Reactive function (recalculates when dependencies change)
+
+    // Value transformation callbacks (in order)
+    'adapt',          // Transform value to appropriate type
+    'assertValue',    // Validate and throw if invalid
+    'preSet',         // Called before value updated (can modify value)
+    'postSet',        // Called after value updated
+
+    // Advanced
+    'getter',         // Custom getter replacing normal process
+    'setter',         // Custom setter replacing normal process
+    'final',          // Can only be set once (read-only after)
+    'transient',      // Not persisted to storage/network
+    ...
+  ]
+});
+```
+
+#### Commonly Used Property Types
+
+FOAM provides many predefined property types in `foam/lang/types.js`:
+
+- **Numeric:** `Int`, `Long`, `Float`, `Double`, `Short`, `Byte`, `UnitValue`, `Duration`
+- **String:** `String`, `EMail`, `Password`, `URL`, `Code`, `PhoneNumber`, `Color`, `Image`
+- **Date/Time:** `Date`, `DateTime`, `DateTimeUTC`, `Time`
+- **Boolean:** `Boolean`
+- **Enum:** `Enum` (requires `of` to specify the enum class)
+- **Object:** `FObjectProperty` (embedded by value), `Reference` (by ID)
+- **Collections:** `Array`, `StringArray`, `FObjectArray`, `Map`
+
+#### Object and Reference Properties
+
+Two property types are particularly important for modeling relationships between FOAM objects: `FObjectProperty` and `Reference`. Both use the `of` property to specify the target FOAM class, but they differ in how they store the relationship.
+
+**FObjectProperty - Embedded Objects (By Value):**
+
+Stores a complete FOAM object **by value**, embedded inline with its parent. Use this when the child object is owned by and stored with the parent.
+
+```javascript
+{
+  class: 'FObjectProperty',
+  of: 'com.example.Address',      // The FOAM class this property holds
+  name: 'address',
+  factory: function() {           // Create default instance
+    return this.Address.create();
+  }
+}
+```
+
+The `of` property specifies the FOAM class type. The entire Address object is serialized and stored as part of the parent object.
+
+**Reference - Foreign Key Relationship (By Reference):**
+
+Stores only the **ID** of another object, not the object itself. Use this when objects are stored separately (in different DAOs) and you need a relationship between them.
+
+```javascript
+{
+  class: 'Reference',
+  of: 'com.example.User',         // The FOAM class being referenced
+  name: 'authorId',
+  targetDAOKey: 'userDAO'         // DAO where the referenced object lives
+}
+```
+
+The `Reference` property:
+- Stores only the ID value (lightweight, like a foreign key in SQL)
+- The `of` property specifies what type of object this ID refers to
+- `targetDAOKey` specifies which DAO to use to look up the full object
+- FOAM UI automatically creates links to navigate to the referenced object
+
+**Comparison:**
+
+| Aspect | FObjectProperty | Reference |
+|--------|-----------------|-----------|
+| Storage | Entire object embedded | Only ID stored |
+| `of` meaning | Type of embedded object | Type of referenced object |
+| Use case | Owned child objects | Relationships to external objects |
+| Serialization | Object included inline | Just the ID value |
+
+
+#### Property Examples
+
+**Numeric properties:**
+```javascript
+{ class: 'Int', name: 'count', min: 0, max: 100 }
+{ class: 'Long', name: 'id' }
+{ class: 'Float', name: 'price', precision: 2 }
+```
+
+**String properties:**
+```javascript
+{ class: 'String', name: 'name', trim: true, width: 50 }
+{ class: 'EMail', name: 'email' }      // Auto-lowercase, trimmed
+{ class: 'Password', name: 'secret' }  // Hidden text
+```
+
+**Date/Time properties:**
+```javascript
+{ class: 'Date', name: 'birthDate' }      // Date only (normalized to noon UTC)
+{ class: 'DateTime', name: 'createdAt' }  // Date and time
+```
+
+**Boolean property:**
+```javascript
+{ class: 'Boolean', name: 'isActive', value: false }
+```
+
+**Enum property** (first define the enum, then reference it):
+```javascript
+// Define the enum
+foam.ENUM({
+  package: 'com.example',
+  name: 'Status',
+  values: [
+    { name: 'DRAFT',     label: 'Draft' },
+    { name: 'PUBLISHED', label: 'Published' },
+    { name: 'ARCHIVED',  label: 'Archived' }
+  ]
+});
+
+// Use in a property
+{ class: 'Enum', of: 'com.example.Status', name: 'status', value: 'DRAFT' }
+```
+
+#### Collection Properties
+
+**Array:**
+
+```javascript
+{
+  class: 'Array',
+  name: 'tags',
+  factory: function() { return []; }
+}
+// Helper methods: tags$push(item), tags$remove(predicate), tags$filter(predicate)
+```
+
+**StringArray:**
+
+```javascript
+{
+  class: 'StringArray',
+  name: 'keywords'
+}
+```
+
+**FObjectArray - Array of FOAM Objects:**
+
+```javascript
+{
+  class: 'FObjectArray',
+  of: 'com.example.Ingredient',
+  name: 'ingredients'
+}
+```
+
+**Map:**
+
+```javascript
+{
+  class: 'Map',
+  name: 'metadata'
+}
+// Helper methods: metadata$set(key, value), metadata$remove(key)
+```
+
+#### Property Features
+
+**Defaults:**
+- `value` - Static default (parsed at model build time)
+- `factory` - Function returning default (runs once on first access)
+- `expression` - Reactive computation (recalculates when dependencies change)
+
+```javascript
+// Static default
+{ class: 'Int', name: 'count', value: 0 }
+
+// Factory - runs once when first accessed
+{ class: 'Array', name: 'items', factory: function() { return []; } }
+
+// Expression - reactive, recalculates when dependencies change
+{
+  class: 'String',
+  name: 'fullName',
+  expression: function(firstName, lastName) {
+    return firstName + ' ' + lastName;
+  }
+}
+```
+
+**Validation and Transformation:**
+- `required` - Property must have a value
+- `adapt` - Transform value before setting
+- `preSet` - Hook before value is set (can modify value)
+- `postSet` - Hook after value is set
+
+```javascript
+{
+  class: 'String',
+  name: 'email',
+  required: true,
+  preSet: function(old, nu) {
+    return nu.toLowerCase().trim();
+  },
+  postSet: function(old, nu) {
+    console.log('Email changed from', old, 'to', nu);
+  }
+}
+```
+
+**Visibility Controls:**
+
+```javascript
+{
+  class: 'Long',
+  name: 'id',
+  createVisibility: 'HIDDEN',     // Hidden when creating new objects
+  updateVisibility: 'RO',         // Read-only when editing
+  readVisibility: 'RO'            // Read-only in detail views
+}
+// Values: 'RW' (read-write), 'RO' (read-only), 'HIDDEN', 'DISABLED'
+```
+
+**Other Common Options:**
+- `transient: true` - Not persisted to storage/network
+- `hidden: true` - Hidden from all views
+- `documentation: '...'` - Inline documentation
+- `label: 'Display Name'` - UI label (defaults to property name)
+- `help: '...'` - Help text for users
+
+### Methods
+
+Methods can be defined in short or long form:
+
+```javascript
+methods: [
+  // Short form - JavaScript only
+  function toSummary() {
+    return this.name;
+  },
+
+  // Long form - supports both JavaScript and Java
+  {
+    name: 'calculateTotal',
+    args: [
+      { name: 'items', type: 'Array' },
+      { name: 'taxRate', type: 'Float' }
+    ],
+    type: 'Float',
+    code: function(items, taxRate) {
+      var subtotal = items.reduce((sum, item) => sum + item.price, 0);
+      return subtotal * (1 + taxRate);
+    },
+    javaCode: `
+      float subtotal = 0;
+      for (var item : items) subtotal += item.getPrice();
+      return subtotal * (1 + taxRate);
+    `
+  }
+]
+```
+
+### Listeners
+
+Listeners are methods that are **pre-bound** to `this`. Use them as callbacks that will be passed around the system but need to execute with the correct context:
+
+```javascript
+listeners: [
+  {
+    name: 'onDataChange',
+    code: function() {
+      // 'this' is always the object instance, even when called externally
+      console.log('Data changed:', this.name);
+      this.refresh();
+    }
+  },
+  {
+    name: 'onButtonClick',
+    // Optional: debounce/throttle frequent events
+    isMerged: true,        // Merge rapid calls into one
+    delay: 100,            // Wait 100ms before executing
+    code: function(event) {
+      this.handleClick(event);
+    }
+  }
+]
+```
+
+### Actions
+
+Actions are user-initiated operations that can be displayed as buttons in the UI:
+
+```javascript
+actions: [
+  {
+    name: 'save',
+    label: 'Save Recipe',
+    icon: 'save',
+    isEnabled: function(name) { return !!name; },  // Enable only if name exists
+    code: function() {
+      this.recipeDAO.put(this);
+    }
+  },
+  {
+    name: 'delete',
+    label: 'Delete',
+    confirmationRequired: true,
+    code: function() {
+      this.recipeDAO.remove(this);
+    }
+  }
+]
+```
 
 ## Source-to-Sink Architecture
 
