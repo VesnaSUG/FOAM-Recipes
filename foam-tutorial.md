@@ -1175,7 +1175,7 @@ Properties support a rich set of features for handling default values, transform
 - `factory` - Function returning default (runs once on first access)
 - `expression` - Reactive computation (recalculates when dependencies change)
 
-**Note:** Once you explicitly set a property's value, the dynamic default (`factory` or `expression`) is bypassed until you clear the value by setting it to `undefined`. This allows users to override computed values while preserving the ability to "reset" back to the default behavior.
+> **Important:** Once you explicitly set a property's value, the dynamic default (`factory` or `expression`) is bypassed until you clear the value by setting it to `undefined`. This allows users to override computed values while preserving the ability to "reset" back to the default behavior.
 
 ```javascript
 // Static default
@@ -1334,7 +1334,7 @@ actions: [
 
 ## Source-to-Sink Architecture
 
-In **FOAM**, DAOs and Sinks are explicitly separated. A **Sink** is an interface used specifically with the `select()` operation to process query results as they stream from the data source.
+In **FOAM**, DAOs and Sinks are explicitly separated. A **Sink** is an interface used specifically with the `select()` operation to process query results as they stream from the data source. See [DAO-Sink Flow Diagram](html/dao_sink_flow.html) for a visual representation.
 
 ### The Sink Interface
 
