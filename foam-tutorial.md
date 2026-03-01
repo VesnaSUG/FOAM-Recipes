@@ -1175,6 +1175,8 @@ Properties support a rich set of features for handling default values, transform
 - `factory` - Function returning default (runs once on first access)
 - `expression` - Reactive computation (recalculates when dependencies change)
 
+**Note:** Once you explicitly set a property's value, the dynamic default (`factory` or `expression`) is bypassed until you clear the value by setting it to `undefined`. This allows users to override computed values while preserving the ability to "reset" back to the default behavior.
+
 ```javascript
 // Static default
 { class: 'Int', name: 'count', value: 0 }
