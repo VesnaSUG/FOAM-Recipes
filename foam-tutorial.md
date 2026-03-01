@@ -929,11 +929,11 @@ properties: [
 ]
 ```
 
-> **Note:** Untyped properties (just a name string) work in JavaScript but won't generate proper Java or Swift code. Always use typed properties for cross-language models.
+> **Note:** Untyped properties (just a name string) work in JavaScript but won't generate Java or Swift code. Always use typed properties for cross-language models.
 
 #### Property Definition (Abridged from Property.js)
 
-All property types extend `foam.lang.Property`. Here are the key options available:
+All property types extend `foam.lang.Property`. Here are the core options available on the base Property class:
 
 ```javascript
 foam.CLASS({
@@ -969,9 +969,19 @@ foam.CLASS({
 });
 ```
 
-#### Commonly Used Property Types
+#### Property Extensibility
 
-FOAM provides many predefined property types in `foam/lang/types.js`:
+FOAM's Property system is extensible along two axes, keeping the base Property lightweight while allowing libraries and subclasses to add capabilities as needed.
+
+1. **Property Subclasses** - Create specialized property types with custom behavior (e.g., `String` adds `minLength`/`maxLength`, `Int` adds `min`/`max`, `Reference` adds `of` for target class)
+
+2. **Library Refinements** - Add new features to existing property types across the framework (e.g., a UI library can add `visibility` to the base Property class without modifying the core)
+
+This means the features available on a property depend on which libraries are loaded. The core Property class stays minimal, while extensions like `foam.u2` add UI-specific options.
+
+#### Property Subclasses: Commonly Used Types
+
+These are examples of the first axis of extensibility—Property subclasses. FOAM provides many predefined property types in `foam/lang/types.js`, each extending the base `Property` class with type-specific behavior and validation:
 
 - **Numeric:** `Int`, `Long`, `Float`, `Double`, `Short`, `Byte`, `UnitValue`, `Duration`
 - **String:** `String`, `EMail`, `Password`, `URL`, `Code`, `PhoneNumber`, `Color`, `Image`
@@ -1117,7 +1127,48 @@ foam.ENUM({
 // Helper methods: metadata$set(key, value), metadata$remove(key)
 ```
 
+#### Creating Custom Property Types
+
+There's nothing special about the types in `foam/lang/types.js`—they're just regular FOAM models that extend `foam.lang.Property`. You can create your own property types to encapsulate repeated configurations.
+
+**When to create a custom type:** If you find yourself repeating the same property configuration throughout your code, declare a new Property subclass:
+
+```javascript
+// Before: Repeating configuration everywhere
+properties: [
+  { class: 'String', name: 'email1', trim: true, width: 80,
+    pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+' },
+  { class: 'String', name: 'email2', trim: true, width: 80,
+    pattern: '^[\\w.-]+@[\\w.-]+\\.\\w+' },
+  // ... repeated many times
+]
+
+// After: Create a custom type
+foam.CLASS({
+  package: 'com.myapp',
+  name: 'CompanyEmail',
+  extends: 'foam.lang.String',
+
+  properties: [
+    { name: 'trim', value: true },
+    { name: 'width', value: 80 },
+    { name: 'pattern', value: '^[\\w.-]+@[\\w.-]+\\.\\w+' },
+    { name: 'view', value: { class: 'foam.u2.TextField', type: 'email' } }
+  ]
+});
+
+// Now use it simply
+properties: [
+  { class: 'com.myapp.CompanyEmail', name: 'email1' },
+  { class: 'com.myapp.CompanyEmail', name: 'email2' }
+]
+```
+
+Custom property types can also add new property-properties, validation logic, or custom adapters—anything a built-in type can do.
+
 #### Property Features
+
+Properties support a rich set of features for handling default values, transforming input, validation, and reacting to changes. These features are defined on the base `Property` class and inherited by all property types.
 
 **Defaults:**
 - `value` - Static default (parsed at model build time)
@@ -1161,7 +1212,28 @@ foam.ENUM({
 }
 ```
 
-**Visibility Controls:**
+**Other Common Options:**
+- `transient: true` - Not persisted to storage/network
+- `hidden: true` - Hidden from all views
+- `documentation: '...'` - Inline documentation
+- `label: 'Display Name'` - UI label (defaults to property name)
+- `help: '...'` - Help text for users
+
+#### Library Refinements
+
+When you load additional FOAM libraries, they refine the Property class to add library-specific properties. This means Property grows new capabilities based on what features you're using:
+
+| Library | Added Property Properties | Purpose |
+|---------|---------------------------|---------|
+| U2 (GUI) | `view`, `placeholder`, `visibility`, `order`, `onKey` | UI rendering and behavior |
+| SQL | `sqlType` | Database column mapping |
+| Validation | Various per-type | Property validation rules |
+
+The `view` property is particularly important—it determines the default View class used when rendering this property in the UI. For example, the `Password` property defaults to `PasswordView`, which provides a masked input field.
+
+This refinement approach means Property isn't burdened with extra properties for libraries or features you may not be using.
+
+**Visibility Controls (from U2):**
 
 ```javascript
 {
@@ -1173,13 +1245,6 @@ foam.ENUM({
 }
 // Values: 'RW' (read-write), 'RO' (read-only), 'HIDDEN', 'DISABLED'
 ```
-
-**Other Common Options:**
-- `transient: true` - Not persisted to storage/network
-- `hidden: true` - Hidden from all views
-- `documentation: '...'` - Inline documentation
-- `label: 'Display Name'` - UI label (defaults to property name)
-- `help: '...'` - Help text for users
 
 ### Methods
 
