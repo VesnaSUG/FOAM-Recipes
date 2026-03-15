@@ -1,3 +1,16 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+
+- [FOAM-Recipes](#foam-recipes)
+  - [Tutorial](#tutorial)
+  - [Running This Example](#running-this-example)
+    - [Prerequisites](#prerequisites)
+    - [Setup](#setup)
+    - [Run the Application](#run-the-application)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # FOAM-Recipes
 
 This repository contains the completed [FOAM][foam-intro] cooking recipe database application from the FOAM tutorial. It serves as a reference for those who wish to explore the finished code without following the tutorial hands-on.
