@@ -1,7 +1,18 @@
 p({
   "class":"foam.core.menu.Menu",
-  "id":"recipes.recipe",
+  "id":"cookbook",
+  "label":"Cook Book",
+  "authenticate":true,
+  "handler":{"class":"foam.core.menu.SubMenu","title":"Cook Book"},
+  "border":{"class":"foam.u2.borders.NullBorder"}
+})
+
+p({
+  "class":"foam.core.menu.Menu",
+  "id":"cookbook.recipe",
+  "parent":"cookbook",
   "label":"Recipe",
+  "order":1,
   "authenticate":true,
   "keywords":[""],
   "handler":{
@@ -9,6 +20,57 @@ p({
     "config":{
       "class":"foam.comics.v2.DAOControllerConfig",
       "daoKey":"recipeDAO"
+    }
+  }
+})
+
+p({
+  "class":"foam.core.menu.Menu",
+  "id":"cookbook.recipeStep",
+  "parent":"cookbook",
+  "label":"Recipe Step",
+  "order":2,
+  "authenticate":true,
+  "keywords":[""],
+  "handler":{
+    "class":"foam.core.menu.DAOMenu2",
+    "config":{
+      "class":"foam.comics.v2.DAOControllerConfig",
+      "daoKey":"recipeStepDAO"
+    }
+  }
+})
+
+p({
+  "class":"foam.core.menu.Menu",
+  "id":"cookbook.ingredient",
+  "parent":"cookbook",
+  "label":"Ingredient",
+  "order":3,
+  "authenticate":true,
+  "keywords":[""],
+  "handler":{
+    "class":"foam.core.menu.DAOMenu2",
+    "config":{
+      "class":"foam.comics.v2.DAOControllerConfig",
+      "daoKey":"ingredientDAO"
+    }
+  }
+})
+
+p({
+  "class":"foam.core.menu.Menu",
+  "id":"cookbook.ingredientAmount",
+  "parent":"cookbook",
+  "label":"Ingredient Amount",
+  "order":4,
+  "authenticate":true,
+  "keywords":[""],
+  "handler":{
+    "class":"foam.core.menu.DAOMenu2",
+    "config":{
+      "class":"foam.comics.v2.DAOControllerConfig",
+      "daoKey":"ingredientAmountDAO"
     }
   }
 })

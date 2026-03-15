@@ -16,3 +16,60 @@ p({
   """,
   "client": `{"of":"com.foamdev.cook.Recipe"}`
 })
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "ingredientDAO",
+  "description": "",
+  "serve": true,
+  "authenticate": true,
+  "keywords": [ "ingredient" ],
+  "serviceScript": """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(com.foamdev.cook.Ingredient.getOwnClassInfo())
+      .setPm(true)
+      .setSeqNo(true)
+      .setAuthorize(false)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .build();
+  """,
+  "client": `{"of":"com.foamdev.cook.Ingredient"}`
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "ingredientAmountDAO",
+  "description": "",
+  "serve": true,
+  "authenticate": true,
+  "keywords": [ "ingredientAmount" ],
+  "serviceScript": """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(com.foamdev.cook.IngredientAmount.getOwnClassInfo())
+      .setPm(true)
+      .setSeqNo(true)
+      .setAuthorize(false)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .build();
+  """,
+  "client": `{"of":"com.foamdev.cook.IngredientAmount"}`
+})
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "recipeStepDAO",
+  "description": "",
+  "serve": true,
+  "authenticate": true,
+  "keywords": [ "recipeStep" ],
+  "serviceScript": """
+    return new foam.dao.EasyDAO.Builder(x)
+      .setOf(com.foamdev.cook.RecipeStep.getOwnClassInfo())
+      .setPm(true)
+      .setSeqNo(true)
+      .setAuthorize(false)
+      .setJournalType(foam.dao.JournalType.SINGLE_JOURNAL)
+      .build();
+  """,
+  "client": `{"of":"com.foamdev.cook.RecipeStep"}`
+})

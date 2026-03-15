@@ -14,10 +14,37 @@ p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"p
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"password.read.*"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"password.update.*"})
 
-// specific model
+// Cook Book menus
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.cookbook"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.cookbook.recipe"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.cookbook.ingredient"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.cookbook.ingredientAmount"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.cookbook.recipeStep"})
+
+// Recipe
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.recipeDAO"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.create"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.read.*"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.update.*"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipe.delete.*"})
-p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.recipes.recipe"})
+
+// Ingredient
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.ingredientDAO"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredient.create"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredient.read.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredient.update.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredient.delete.*"})
+
+// IngredientAmount
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.ingredientAmountDAO"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredientamount.create"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredientamount.read.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredientamount.update.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"ingredientamount.delete.*"})
+
+// RecipeStep
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.recipeStepDAO"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.create"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.read.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.update.*"})
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.delete.*"})
