@@ -48,3 +48,6 @@ p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"r
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.read.*"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.update.*"})
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"recipestep.delete.*"})
+
+// ConversionService
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.conversionService"})

@@ -73,3 +73,26 @@ p({
   """,
   "client": `{"of":"com.foamdev.cook.RecipeStep"}`
 })
+
+p({
+  "class": "foam.core.boot.CSpec",
+  "name": "conversionService",
+  "serve": true,
+  "authenticate": true,
+  "boxClass": "com.foamdev.cook.ConversionServiceSkeleton",
+  "serviceScript": """
+    return new com.foamdev.cook.ServerConversionService(x);
+  """,
+  "client": """
+    {
+      "class": "com.foamdev.cook.ClientConversionService",
+      "delegate": {
+        "class": "foam.box.SessionClientBox",
+        "delegate": {
+          "class": "foam.box.HTTPBox",
+          "url": "service/conversionService"
+        }
+      }
+    }
+  """
+})

@@ -27,12 +27,6 @@ foam.CLASS({
       class: 'Boolean',
       name: 'isPrep',
       value: false
-    },
-    {
-      class: 'Reference',
-      of: 'com.foamdev.cook.Recipe',
-      name: 'recipe',
-      targetDAOKey: 'recipeDAO'
     }
   ],
 

@@ -12,6 +12,11 @@ foam.POM({
     { name: 'Ingredient',              flags: 'js|java' },
     { name: 'IngredientAmount',        flags: 'js|java' },
     { name: 'RecipeStep',              flags: 'js|java' },
-    { name: 'Relationships',           flags: 'js|java' }
+    { name: 'Relationships',           flags: 'js|java' },
+    { name: 'ConversionService',       flags: 'js|java' }
+  ],
+
+  javaFiles: [
+    { name: 'ServerConversionService' }
   ]
 });
