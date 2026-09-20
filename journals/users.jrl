@@ -1,7 +1,7 @@
 p({
   "class":"foam.core.auth.User",
   "id":42,
-  "spid":"recipes",
+  "spid":"recipe",
   "lifecycleState":1,
   "group":"system",
   "firstName":"admin",
@@ -10,7 +10,7 @@ p({
   "email":"admin@cook.foamdev.com",
   "userName":"admin",
   "birthday":"1982-07-07T23:12:00.0Z",
-  "password":"TM6LbUdo8Yg=:98ZDQ61tWdDWkpTR5scOo5d67A1YpzAfsQDgorcn8KCqrW7olOE9LKM8Zrn3y9lSGnc8w1rF1jFJQxVOySMIXw==",
+  "password":"Ln0WUJzm3UY=:yeRd/uQL3XBpeiwPE5dW3Dpp5KhARKEr0cw/CSRzm3/xbbj2g8QGClZ9LmyHXoEQ19sV4M8nImA/LXL1FIpYlg==",
   "emailVerified":true,
   "loginEnabled":true
 })

@@ -52,3 +52,6 @@ p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"r
 
 // ConversionService
 p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"service.conversionService"})
+
+// Landing page (welcome menu — hidden from sidebar, used as defaultMenu)
+p({class:"foam.core.auth.GroupPermissionJunction",sourceId:"recipes",targetId:"menu.read.welcome"})
